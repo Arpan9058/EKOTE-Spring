@@ -1,103 +1,170 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>E-KOTE Dashboard</title>
 
-    <!-- Materialize CSS -->
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
-    />
-    <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-    />
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
     <style>
         body {
-            background-color: #f5f5f5;
+            background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+            font-family: 'Roboto', sans-serif;
         }
 
-        .container {
-            margin-top: 50px;
-        }
-
-        h4 {
-            margin-bottom: 40px;
+        .dashboard-title {
+            text-align: center;
+            color: #4caf50;
             font-weight: bold;
+            margin-top: 40px;
+            font-size: 2.5rem;
         }
 
-        .btn-large {
-            width: 400px;
-            height: 200px;
-            font-size: 30px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px 20px;
+            text-align: center;
+            transition: 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .dashboard-icon {
+            font-size: 40px;
+            color: #4caf50;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-title-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .dashboard-desc {
+            font-size: 0.95rem;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+        }
+
+        .user-view {
+            padding: 24px 16px;
+            background-color: #4caf50;
+            color: white;
+            border-bottom: 1px solid #388e3c;
+        }
+
+        .user-view .name {
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+
+        .user-view .email {
+            font-size: 1rem;
+            opacity: 0.85;
+        }
+
+        .sidenav li a {
+            font-size: 1.1rem;
+            color: #333;
             display: flex;
             align-items: center;
-            justify-content: center;
+            padding: 12px 24px;
+            transition: color 0.3s ease;
+        }
+
+        .sidenav li a:hover {
+            color: #4caf50;
+            background-color: #e8f5e9;
+        }
+
+        .sidenav li a i.left {
+            margin-right: 16px;
+            font-size: 1.3rem;
+            width: 24px;
             text-align: center;
-        }
-
-        .btn-large:hover {
-            filter: brightness(90%);
-        }
-
-        @media screen and (max-width: 600px) {
-            .btn-large {
-                width: 100%;
-                height: 120px;
-                font-size: 20px;
-                margin-bottom: 15px;
-            }
         }
     </style>
 </head>
-
 <body>
-<!-- Include Side Navigation -->
-<div th:replace="fragments/sidenav :: sidenav"></div>
 
-<div class="container">
-    <h4 class="center-align">E-KOTE Dashboard</h4>
-    <br />
-    <br />
-    <!-- Actionable Shortcuts -->
-    <div class="row center-align">
-        <div class="col s12 m6">
-            <a th:href="@{/QRCode}" class="btn-large waves-effect waves-light blue">Bar Code Generator</a>
+<!-- Side Navigation Fragment -->
+<div th:replace="fragments/sidenav :: sidenav"></div>
+<!-- Side Navigation Fragment -->
+
+<!-- Main Content -->
+<div class="main-content">
+    <h4 class="dashboard-title">E-KOTE Dashboard</h4>
+
+    <div class="dashboard-grid">
+        <!-- Card 1 -->
+        <div onclick="window.location.href='/QRCode'" class="dashboard-card">
+            <i class="fa fa-qrcode dashboard-icon"></i>
+            <div class="dashboard-title-text">Bar Code Generator</div>
+            <div class="dashboard-desc">Generate QR codes for registered weapons quickly.</div>
         </div>
-        <div class="col s12 m6">
-            <a th:href="@{/inventory_management}" class="btn-large waves-effect waves-light green">Add New Weapon</a>
+
+        <!-- Card 2 -->
+        <div onclick="window.location.href='/inventory_management'" class="dashboard-card">
+            <i class="fa fa-plus-square dashboard-icon"></i>
+            <div class="dashboard-title-text">Add New Weapon</div>
+            <div class="dashboard-desc">Register and manage new weapons in the inventory.</div>
         </div>
-    </div>
-    <br />
-    <div class="row center-align">
-        <div class="col s12 m6">
-            <a th:href="@{/IssueReturn}" class="btn-large waves-effect waves-light amber">Issue/Return Weapon</a>
+
+        <!-- Card 3 -->
+        <div onclick="window.location.href='/IssueReturn'" class="dashboard-card">
+            <i class="fa fa-exchange dashboard-icon"></i>
+            <div class="dashboard-title-text">Issue/Return Weapon</div>
+            <div class="dashboard-desc">Easily manage weapon issuing and return process.</div>
         </div>
-        <div class="col s12 m6">
-            <a th:href="@{/recordBook}" class="btn-large waves-effect waves-light red">Record Book</a>
+
+        <!-- Card 4 -->
+        <div onclick="window.location.href='/recordBook'" class="dashboard-card">
+            <i class="fa fa-book dashboard-icon"></i>
+            <div class="dashboard-title-text">Record Book</div>
+            <div class="dashboard-desc">Access the full history of weapon transactions.</div>
         </div>
     </div>
 </div>
 
-<!-- JS Scripts -->
-<script
-        src="https://code.jquery.com/jquery-3.7.1.min.js"
-        crossorigin="anonymous"
-></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
-></script>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
 <script>
     $(document).ready(function () {
-        $(".sidenav").sidenav();
+        $('.sidenav').sidenav();  // Initialize the sidenav
     });
 </script>
 </body>
-
 </html>

@@ -3,71 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <title>Generate QR Code</title>
+
     <!-- Materialize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
-        .container {
-            margin-top: 50px;
-        }
-        .card-panel {
-            padding: 30px;
-            text-align: center;
-        }
-        .input-field input {
-            border-bottom: 2px solid #26a69a;
-        }
-        h5 {
-            font-weight: bold;
-            color: #26a69a;
-        }
-        .btn {
-            background-color: #26a69a;
-        }
+        /* Full page background (consistent with login/register) */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto", sans-serif;
+    background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Center content properly */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Form card */
+.form-card {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 40px 30px;
+    width: 100%;
+    max-width: 480px;
+    text-align: center;
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Title */
+h4 {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #4caf50;
+}
+
+/* Subtitle */
+p {
+    color: #666;
+    margin-bottom: 15px; /* Reduced this margin */
+}
+
+/* QR icon animation */
+.qricon {
+    font-size: 55px;
+    color: #4caf50;
+    margin-bottom: 20px;
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Input fields */
+.input-field input {
+    border-bottom: 2px solid #4caf50 !important;
+    padding: 8px;
+    font-size: 1rem;
+}
+  @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
+.input-field input:focus {
+    border-bottom: 2px solid #388e3c !important;
+    box-shadow: 0 1px 0 0 #388e3c !important;
+}
+
+/* Buttons */
+.btn {
+    background-color: #4caf50;
+    border-radius: 25px;
+<!--    padding: 25px 25px;-->
+    font-size: 1rem;
+    transition: 0.3s;
+    margin-top: 25px; /* Increased this margin to create separation from input */
+    margin-bottom: 0; /* Removed this margin as it's typically for spacing BELOW the button */
+}
+
+.btn:hover {
+    background-color: #388e3c;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* Floating animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast styling */
+.toast {
+    background-color: #e53935 !important;
+    color: #fff !important;
+    font-weight: bold;
+}
     </style>
 </head>
 <body>
 <!-- ✅ Include navbar fragment -->
 <div th:replace="fragments/sidenav :: sidenav"></div>
+<div class="main-content">
 
-<div class="container">
-    <div class="row">
-        <div class="col s12 m6 offset-m3">
-            <!-- Card panel for the form -->
-            <div class="card-panel">
-                <h5>Generate QR Code</h5>
-                <form th:action="@{/qrcode}" method="get">
-                    <div class="input-field">
-                        <input type="text" name="gunId" id="gunId" required>
-                        <label for="gunId">Enter Unique Identifier :</label>
-                    </div>
-                    <div>
-                        <button type="submit" class="btn waves-effect waves-light">Generate QR Code</button>
-                    </div>
-                </form>
+<main>
+    <div class="form-card">
+        <i class="fa fa-qrcode qricon"></i>
+        <h4>Generate QR Code</h4>
+        <p>Enter the unique identifier of the gun to generate a QR code instantly.</p>
+
+        <form th:action="@{/qrcode}" method="get">
+            <div class="input-field">
+                <input type="text" name="gunId" id="gunId" required>
+                <label for="gunId">Enter Unique Identifier</label>
             </div>
-        </div>
+            <button type="submit" class="btn waves-effect waves-light">
+                <i class="fa fa-bolt left"></i> Generate
+            </button>
+        </form>
     </div>
+</main>
 </div>
-
 <!-- Materialize JS -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('.sidenav').sidenav();
+    document.addEventListener("DOMContentLoaded", function () {
+        M.Sidenav.init(document.querySelectorAll('.sidenav'));
+
+        const urlparam = new URLSearchParams(window.location.search);
+        if (urlparam.get('error') === "gun_not_found") {
+            M.toast({html: '❌ Gun not found!', displayLength: 4000});
+        }
     });
 
-    function showError() {
-        const urlparam = new URLSearchParams(window.location.search);
-        const error = urlparam.get('error');
-        if (error === "gun_not_found") {
-            alert("Gun not Found");
-        }
-    }
-
-    window.onload = showError;
 </script>
 </body>
 </html>

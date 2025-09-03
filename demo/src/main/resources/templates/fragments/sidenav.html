@@ -1,8 +1,73 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>EKOTE Dashboard Sidenav</title>
+
+    <!-- Materialize CSS -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <style>
+        .user-view {
+          padding: 24px 16px;
+          background-color: #4caf50;
+          color: white;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+          border-bottom: 1px solid #388e3c;
+        }
+        .user-view .name {
+          font-weight: 700;
+          font-size: 1.3rem;
+          margin-bottom: 4px;
+        }
+        .user-view .email {
+          font-size: 1rem;
+          opacity: 0.85;
+        }
+
+        .sidenav li a {
+          font-size: 1.1rem;
+          color: #333;
+          display: flex;
+          align-items: center;
+          padding: 12px 24px;
+          transition: color 0.3s ease;
+        }
+        .sidenav li a:hover {
+          color: #4caf50;
+          background-color: #e8f5e9;
+        }
+        .sidenav li a i.left {
+          margin-right: 16px;
+          font-size: 1.3rem;
+          width: 24px; /* fix icon width to prevent text jump */
+          text-align: center;
+        }
+
+        /* Sidenav trigger icon */
+        .sidenav-trigger {
+          cursor: pointer;
+          color: #4caf50;
+          position: fixed;
+          top: 10px;
+          left: 10px;
+          z-index: 1000;
+        }
+    </style>
+
+</head>
 <body>
+
+<!-- fragments/sidenav.html -->
 <div th:fragment="sidenav">
-    <ul id="slide-out" class="sidenav">
+    <ul id="slide-out" class="sidenav sidenav-fixed">
         <li>
             <div class="user-view">
                 <a href="#name">
@@ -22,9 +87,26 @@
         <li><a th:href="@{/AddSpecific}">Add Gun Portal</a></li>
         <li><a th:href="@{/logout}">Logout</a></li>
     </ul>
-    <a data-target="slide-out" class="sidenav-trigger">
-        <i class="fa fa-navicon" style="font-size:38px; padding: 10px"></i>
-    </a>
 </div>
+
+
+<!--<a href="#" data-target="slide-out" class="sidenav-trigger">-->
+<!--    <i class="fa fa-bars"></i>-->
+<!--</a>-->
+
+
+
+
+<!-- Materialize JS -->
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+        defer
+></script>
+<script>
+<!--    document.addEventListener('DOMContentLoaded', function () {-->
+<!--      var <el></el>ems = document.querySelectorAll('.sidenav');-->
+<!--      M.Sidenav.init(elems);-->
+<!--    });-->
+</script>
 </body>
 </html>

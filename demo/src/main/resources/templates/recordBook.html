@@ -1,59 +1,106 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Record Book</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Materialize CSS + FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
     <style>
-        .container {
-            max-width: 90%;
-            margin: 0 auto;
-            padding-top: 20px;
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+            font-family: 'Roboto', sans-serif;
         }
-        .table th, .table td {
-            padding: 15px;
+
+        h1 {
+            color: #4caf50;
+            font-weight: 700;
+            margin-top: 40px;
+            margin-bottom: 30px;
             text-align: center;
+            font-size: 2.5rem;
         }
-        .table th {
-            background-color: #00796b;
-            color: white;
+
+        .table-container {
+            max-width: 1200px;
+            margin: 0 auto 60px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
-        .table td {
-            background-color: #f1f1f1;
+
+        table.striped > tbody > tr {
+            transition: background-color 0.3s ease;
         }
-        .table-wrapper {
-            margin-top: 20px;
+
+        table.striped > tbody > tr:hover {
+            background-color: #dcedc8;
         }
+
+        table.striped > thead > tr > th {
+            background-color: #4caf50 !important;
+            color: white !important;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px 10px;
+        }
+
+        table.striped > tbody > tr > td {
+            background-color: #f9fbe7;
+            color: #333;
+            text-align: center;
+            padding: 12px 10px;
+            vertical-align: middle;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+        }
+         @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
     </style>
 </head>
+
 <body>
 <!-- ✅ Include Side Navigation -->
 <div th:replace="fragments/sidenav :: sidenav"></div>
+<div class="main-content">
 
-<h1 class="center-align">Gun Record Book</h1>
+<h1>Gun Record Book</h1>
 
-<div class="table-wrapper">
+<div class="table-container">
     <table class="striped highlight responsive-table">
         <thead>
         <tr>
-            <th>Gun Identifier</th>
-            <th>User Name</th>
-            <th>User Email</th>
-            <th>User Role</th>
-            <th>Gun Name</th>
-            <th>Model</th>
-            <th>Registered By</th>
-            <th>Manufactured Date</th>
-            <th>Manufactured Place</th>
-            <th>Issue Date</th>
-            <th>Return Date</th>
-            <th>Status</th>
+            <th scope="col">Gun Identifier</th>
+            <th scope="col">User Name</th>
+            <th scope="col">User Email</th>
+            <th scope="col">User Role</th>
+            <th scope="col">Gun Name</th>
+            <th scope="col">Model</th>
+            <th scope="col">Registered By</th>
+            <th scope="col">Manufactured Date</th>
+            <th scope="col">Manufactured Place</th>
+            <th scope="col">Issue Date</th>
+            <th scope="col">Return Date</th>
+            <th scope="col">Status</th>
         </tr>
         </thead>
         <tbody>
-        <!-- ✅ Loop through list from controller -->
+        <!-- Loop through list from controller -->
         <tr th:each="gun : ${recordBookList}">
             <td th:text="${gun.uniqueIdentifier}"></td>
             <td th:text="${gun.Name}"></td>
@@ -76,9 +123,15 @@
         </tbody>
     </table>
 </div>
-
+</div>
 <!-- Materialize JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>M.AutoInit();</script>
+<script>
+    M.AutoInit();
+     $(document).ready(function () {
+        $(".sidenav").sidenav();
+    });
+</script>
 </body>
+
 </html>

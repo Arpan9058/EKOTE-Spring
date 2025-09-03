@@ -37,7 +37,7 @@
 		<!-- The following two dependencies are for Spring Security, which is causing the redirect. -->
 		<!-- If you want to use Spring Security, you need to configure it. -->
 		<!-- If you don't, you must remove these. -->
-		<!--
+
         <dependency>
            <groupId>org.springframework.boot</groupId>
            <artifactId>spring-boot-starter-security</artifactId>
@@ -46,8 +46,7 @@
            <groupId>org.thymeleaf.extras</groupId>
            <artifactId>thymeleaf-extras-springsecurity6</artifactId>
         </dependency>
-        -->
-		<dependency>
+        <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
@@ -78,11 +77,18 @@
 			<artifactId>core</artifactId>
 			<version>3.5.3</version>
 		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.mindrot</groupId>-->
+<!--			<artifactId>jbcrypt</artifactId>-->
+<!--			<version>0.4</version>-->
+<!--		</dependency>-->
+
 		<dependency>
-			<groupId>org.mindrot</groupId>
-			<artifactId>jbcrypt</artifactId>
-			<version>0.4</version>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>

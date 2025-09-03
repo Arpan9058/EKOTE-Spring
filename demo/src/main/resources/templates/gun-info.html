@@ -1,48 +1,91 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gun Information</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
     <style>
         body {
             padding: 20px;
+            background: #e8f5e9; /* very light minty green */
+            font-family: 'Roboto', sans-serif;
+            color: #2e7d32; /* dark green text */
         }
+
         .section-header {
             text-align: center;
             margin-bottom: 30px;
+            color: #1b5e20; /* deep forest green */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(27, 94, 32, 0.3);
         }
+
         .card-content h4 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            color: #388e3c; /* medium green */
+            border-bottom: 3px solid #2e7d32; /* dark green border */
+            padding-bottom: 8px;
         }
+
         .table-wrapper {
-            margin-top: 20px;
+            margin-top: 40px;
         }
-        .table th, .table td {
-            padding: 15px;
+
+        table.table th,
+        table.table td {
+            padding: 14px 12px;
             text-align: center;
+            vertical-align: middle;
         }
-        .table th {
-            background-color: #00796b;
+
+        table.table th {
+            background-color: #2e7d32; /* dark green header */
             color: white;
+            font-weight: 700;
+            letter-spacing: 0.05em;
         }
-        .table td {
-            background-color: #f1f1f1;
+
+        table.table td {
+            background-color: #f1f8e9; /* very light green cell */
+            color: #1b5e20; /* dark text */
         }
+
+        table.table.striped > tbody > tr:hover {
+            background-color: #c8e6c9; /* soft pale green hover */
+            cursor: default;
+            transition: background-color 0.3s ease;
+        }
+
         .container {
             max-width: 90%;
             margin: 0 auto;
         }
+
         .user-details {
             margin-top: 20px;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.15); /* green shadow */
+            color: #1b5e20;
+        }
+
+        .no-data-message {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #2e7d32;
+            margin-top: 40px;
         }
     </style>
+
+
 </head>
+
 <body>
 
 <div class="container">
@@ -73,7 +116,7 @@
     <!-- Past Records Table -->
     <div th:if="${pastRecords != null and !pastRecords.isEmpty()}" class="table-wrapper">
         <h4 class="center"><strong>Past Records</strong></h4>
-        <table class="striped highlight responsive-table">
+        <table class="striped highlight responsive-table table">
             <thead>
             <tr>
                 <th>Gun Name</th>
@@ -103,20 +146,21 @@
                 <td th:text="${gun.email}"></td>
                 <td th:text="${gun.role}"></td>
             </tr>
-            <tr th:if="${pastRecords == null or pastRecords.isEmpty()}">
-                <td colspan="11" class="center-align">No data found.</td>
-            </tr>
             </tbody>
         </table>
     </div>
 
-    <p th:if="${pastRecords == null or pastRecords.isEmpty()}" class="center-align">
+    <!-- No past records message -->
+    <p th:if="${pastRecords == null or pastRecords.isEmpty()}" class="center-align no-data-message">
         No past records found.
     </p>
 
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>M.AutoInit();</script>
+<script>
+    M.AutoInit();
+</script>
 </body>
+
 </html>

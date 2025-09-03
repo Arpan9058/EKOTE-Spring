@@ -1,52 +1,215 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventory Management</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-</head>
-<body>
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Inventory Management</title>
+
+    <!-- Materialize CSS + FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+          background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+          font-family: 'Roboto', sans-serif;
+          color: #2e2e2e;
+          min-height: 100vh;
+          padding-bottom: 60px;
+        }
+
+        .container {
+          max-width: 800px;
+          margin: 60px auto 40px;
+          background: white;
+          border-radius: 16px;
+          padding: 40px 50px;
+          box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.1),
+            0 4px 15px rgba(0, 0, 0, 0.05);
+          transition: box-shadow 0.3s ease;
+        }
+
+        .container:hover {
+          box-shadow:
+            0 14px 45px rgba(0, 0, 0, 0.15),
+            0 6px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        h4 {
+          font-weight: 700;
+          font-size: 2.2rem;
+          margin-bottom: 30px;
+          color: #2e7d32;
+          text-align: center;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          text-shadow: 1px 1px 4px rgba(46, 125, 50, 0.2);
+        }
+
+        form {
+          margin-bottom: 40px;
+        }
+
+        /* Materialize input enhancements */
+        .input-field input[type="text"],
+        .input-field input[type="number"],
+        .input-field select {
+          border-bottom: 2px solid #81c784 !important;
+          font-size: 1.1rem;
+          padding-left: 10px;
+        }
+        @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
+        .input-field label {
+          color: #4caf50 !important;
+          font-weight: 600;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .input-field input:focus+label,
+        .input-field select:focus+label {
+          color: #2e7d32 !important;
+          font-weight: 700;
+          font-size: 0.85rem;
+          transform: translateY(-18px);
+        }
+
+        .input-field input[type="text"]:focus,
+        .input-field input[type="number"]:focus,
+        .input-field select:focus {
+          border-bottom: 2px solid #2e7d32 !important;
+          box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3) !important;
+        }
+
+        /* Buttons */
+        .btn {
+          border-radius: 30px;
+          font-weight: 700;
+          font-size: 1.1rem;
+<!--          padding: 12px 36px;-->
+          box-shadow: 0 6px 15px rgba(76, 175, 80, 0.4);
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn.blue {
+          background-color: #388e3c;
+          box-shadow: 0 6px 15px rgba(56, 142, 60, 0.5);
+        }
+
+        .btn.blue:hover {
+          background-color: #2e7d32;
+          box-shadow: 0 9px 25px rgba(46, 125, 50, 0.6);
+        }
+
+        .btn.red {
+          background-color: #d32f2f;
+          box-shadow: 0 6px 15px rgba(211, 47, 47, 0.5);
+        }
+
+        .btn.red:hover {
+          background-color: #b71c1c;
+          box-shadow: 0 9px 25px rgba(183, 28, 28, 0.6);
+        }
+
+        /* Table */
+        table.striped > tbody > tr:nth-child(odd) {
+          background-color: #e8f5e9 !important;
+        }
+
+        table.striped > tbody > tr:hover {
+          background-color: #c8e6c9 !important;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        th {
+          background-color: #2e7d32 !important;
+          color: white !important;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        td,
+        th {
+          text-align: center !important;
+          vertical-align: middle !important;
+        }
+
+        /* Action buttons in table */
+        .btn-small {
+          padding: 6px 12px;
+          font-size: 0.85rem;
+          border-radius: 20px;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 720px) {
+          .container {
+            padding: 30px 20px;
+          }
+
+          h4 {
+            font-size: 1.8rem;
+          }
+        }
+    </style>
+</head>
+
+<body>
 <!-- Side Navbar -->
 <div th:replace="fragments/sidenav :: sidenav"></div>
+<div class="main-content">
 
 <div class="container">
-    <h4 class="center-align">Add New Gun</h4>
+    <h4>Add New Gun</h4>
 
     <!-- Form to Add or Subtract Gun Entry -->
     <form id="addGunForm" method="post">
         <div class="input-field">
-            <input type="text" name="gun_name" id="gun_name" required>
+            <input type="text" name="gun_name" id="gun_name" required />
             <label for="gun_name">Gun Name</label>
         </div>
         <div class="input-field">
-            <input type="text" name="model" id="model" required>
+            <input type="text" name="model" id="model" required />
             <label for="model">Model</label>
         </div>
         <div class="input-field">
-            <input type="number" name="quantity" id="quantity" required>
+            <input type="number" name="quantity" id="quantity" required min="1" />
             <label for="quantity">Quantity</label>
         </div>
         <div class="input-field">
-            <input type="text" name="registered_by" id="registered_by" required>
+            <input type="text" name="registered_by" id="registered_by" required />
             <label for="registered_by">Registered By</label>
         </div>
         <div class="input-field">
-            <select name="operation" id="operation">
+            <select name="operation" id="operation" required>
                 <option value="add" selected>Add</option>
                 <option value="subtract">Subtract</option>
             </select>
             <label for="operation">Operation</label>
         </div>
-        <button type="submit" class="btn blue">Update Inventory</button>
-        <button type="reset" class="btn red">Reset</button>
+        <button type="submit" class="btn green waves-effect waves-light">Update Inventory</button>
+        <button type="reset" class="btn red waves-effect waves-light">Reset</button>
     </form>
 
-    <hr>
-    <h5>Guns Stock :</h5>
-    <table id="inventoryTable" class="striped">
+    <hr />
+
+    <h5>Guns Stock:</h5>
+    <table id="inventoryTable" class="striped responsive-table highlight">
         <thead>
         <tr>
             <th>ID</th>
@@ -60,74 +223,73 @@
         <tbody></tbody>
     </table>
 </div>
-
+</div>
 <!-- Materialize + jQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
 <script>
-    $(document).ready(function(){
-        $('.sidenav').sidenav();
-        $('select').formSelect();
-        loadInventory();
+    $(document).ready(function () {
+      $('.sidenav').sidenav();
+      $('select').formSelect();
+      loadInventory();
 
-        $("#addGunForm").submit(function(event) {
-            event.preventDefault();
+      $("#addGunForm").submit(function (event) {
+        event.preventDefault();
 
-            var formData = $(this).serialize();  // Serializing form data
+        var formData = $(this).serialize();
 
-            // Optionally check if the operation field is added
-            console.log(formData);  // Check if 'operation' is in the serialized data
-
-            $.ajax({
-                url: "/guns/add",  // Spring Controller endpoint
-                method: "POST",
-                data: formData,
-                contentType: "application/x-www-form-urlencoded", // Form URL encoded data type
-                dataType: "json",  // Expected response data type
-                success: function(response) {
-                    if (response.status === "success") {
-                        M.toast({html: 'Inventory updated successfully!', classes: 'green'});
-                        loadInventory();
-                    } else {
-                        M.toast({html: 'Error: ' + response.message, classes: 'red'});
-                    }
-                },
-                error: function(xhr, status, error) {
-                    M.toast({html: 'Error updating inventory: ' + error, classes: 'red'});
-                }
-            });
+        $.ajax({
+          url: "/guns/add",
+          method: "POST",
+          data: formData,
+          contentType: "application/x-www-form-urlencoded",
+          dataType: "json",
+          success: function (response) {
+            if (response.status === "success") {
+              M.toast({ html: 'Inventory updated successfully!', classes: 'green' });
+              $("#addGunForm")[0].reset();
+              $('select').formSelect(); // reinitialize select after reset
+              loadInventory();
+            } else {
+              M.toast({ html: 'Error: ' + response.message, classes: 'red' });
+            }
+          },
+          error: function (xhr, status, error) {
+            M.toast({ html: 'Error updating inventory: ' + error, classes: 'red' });
+          }
         });
+      });
     });
 
     function deleteGun(gunId) {
-        if (confirm("Are you sure you want to delete this gun from inventory?")) {
-            $.ajax({
-                url: "/guns/delete/"+gunId,
-                method: "DELETE",
-                data: { gunId: gunId },
-                success: function() {
-                    M.toast({html: 'Gun deleted successfully!', classes: 'green'});
-                    loadInventory();
-                },
-                error: function() {
-                    M.toast({html: 'Error deleting gun.', classes: 'red'});
-                }
-            });
-        }
+      if (confirm("Are you sure you want to delete this gun from inventory?")) {
+        $.ajax({
+          url: "/guns/delete/" + gunId,
+          method: "DELETE",
+          data: { gunId: gunId },
+          success: function () {
+            M.toast({ html: 'Gun deleted successfully!', classes: 'green' });
+            loadInventory();
+          },
+          error: function () {
+            M.toast({ html: 'Error deleting gun.', classes: 'red' });
+          }
+        });
+      }
     }
 
     function loadInventory() {
-        $.ajax({
-            url: "/guns/list",
-            method: "GET",
-            dataType: "json",
-            success: function(data) {
-                var tableBody = $("#inventoryTable tbody");
-                tableBody.empty();
-                if (data.length > 0) {
-                    data.forEach(function(gun) {
-                        var row = `
+      $.ajax({
+        url: "/guns/list",
+        method: "GET",
+        dataType: "json",
+        success: function (data) {
+          var tableBody = $("#inventoryTable tbody");
+          tableBody.empty();
+          if (data.length > 0) {
+            data.forEach(function (gun) {
+              var row = `
                             <tr>
                                 <td>${gun.id}</td>
                                 <td>${gun.gunName}</td>
@@ -135,20 +297,26 @@
                                 <td>${gun.quantity}</td>
                                 <td>${gun.registeredBy}</td>
                                 <td>
-                                    <button class="btn red" onclick="deleteGun(${gun.id})">Delete</button>
+                                    <button class="btn red btn-small waves-effect waves-light" onclick="deleteGun(${gun.id})">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>`;
-                        tableBody.append(row);
-                    });
-                } else {
-                    tableBody.append("<tr><td colspan='6'>No guns available in the inventory</td></tr>");
-                }
-            },
-            error: function() {
-                M.toast({html: 'Failed to load inventory.', classes: 'red'});
-            }
-        });
+              tableBody.append(row);
+            });
+          } else {
+            tableBody.append("<tr><td colspan='6'>No guns available in the inventory</td></tr>");
+          }
+        },
+        error: function () {
+          M.toast({ html: 'Failed to load inventory.', classes: 'red' });
+        }
+      });
     }
+     $(document).ready(function () {
+        $(".sidenav").sidenav();
+    });
 </script>
 </body>
+
 </html>

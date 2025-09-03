@@ -23,7 +23,8 @@
                 "JOIN Issue i ON r.id = i.userId " +
                 "JOIN Gun g ON g.id = i.gunId " +
                 "JOIN GunInfo gi ON gi.gun = g AND gi.uniqueIdentifier = i.uniqueIdentifier " +
-                "WHERE gi.uniqueIdentifier = :uniqueIdentifier")
+                "WHERE gi.uniqueIdentifier = :uniqueIdentifier " +
+                "AND i.issueDate = (SELECT MAX(i2.issueDate) FROM Issue i2 WHERE i2.uniqueIdentifier = :uniqueIdentifier)")
         Optional<RecordBookDTO> getGunDetailsByUniqueIdentifier(@Param("uniqueIdentifier") String uniqueIdentifier);
 
         @Query("SELECT new com.ekote.dto.RecordBookDTO(" +

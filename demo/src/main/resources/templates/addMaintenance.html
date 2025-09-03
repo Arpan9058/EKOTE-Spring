@@ -1,65 +1,167 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Maintenance Record</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add Maintenance Record | EKOTE Dashboard</title>
+
+    <!-- Materialize CSS -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
-            background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+    font-family: 'Roboto', sans-serif;
+    height: 100vh;
+}
+
+
+        /* Container */
+        .form-wrapper {
+    max-width: 700px;
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    min-height: calc(100vh - 100px); /* Leaves space for fixed elements */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+        /* Card Style */
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 50px 60px;
+    max-width: 800px; /* wider card */
+    width: 100%;
+            background: #fff;
         }
-        .container {
-            margin-top: 50px;
-        }
-        .card-panel {
-            padding: 30px;
-        }
-        .input-field input:focus {
-            border-bottom: 1px solid #26a69a;
-        }
+
+        /* Title */
         .card-title {
-            color: #26a69a;
-            font-weight: bold;
+            color: #388e3c;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Input fields */
+        .input-field input[type="text"],
+        .input-field input[type="number"] {
+            border-bottom: 2px solid #c8e6c9;
+            transition: border-color 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .input-field input[type="text"]:focus,
+        .input-field input[type="number"]:focus {
+            border-bottom: 2px solid #388e3c !important;
+            box-shadow: 0 1px 0 0 #388e3c !important;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Submit Button */
+        .btn {
+            width: 100%;
+            background-color: #388e3c;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 25px;
+            transition: background-color 0.3s ease;
+            border-radius: 6px;
+        }
+        .main-content .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+        .btn:hover {
+            background-color: #2e7d32;
+        }
+        @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 0 10px;
+            }
+            .card {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-<!-- ✅ Include SideNav -->
+
+<!-- SideNav -->
 <div th:replace="fragments/sidenav :: sidenav"></div>
 
-<div class="container">
-    <!-- Card to display the maintenance form -->
+<!-- Main Content Container -->
+<div class="main-content">
+
+<div class="form-wrapper">
     <div class="card">
-        <div class="card-content">
-            <span class="card-title center-align">Add Maintenance Record</span>
+        <span class="card-title">Add Maintenance Record</span>
 
-            <!-- Maintenance Form -->
-            <form th:action="@{/updateMaintenance}" method="post">
-                <div class="input-field">
-                    <input type="text" id="gun_id" name="gun_id" required>
-                    <label for="gun_id">Unique Identifier:</label>
-                </div>
+        <form th:action="@{/updateMaintenance}" method="post">
+            <div class="input-field">
+                <input type="text" id="gun_id" name="gun_id" required />
+                <label for="gun_id">Unique Identifier</label>
+            </div>
 
-                <div class="input-field">
-                    <input type="text" id="maintenance_freq" name="maintenance_freq" required>
-                    <label for="maintenance_freq">Maintenance Freq:</label>
-                </div>
+            <div class="input-field">
+                <input type="number" id="maintenance_freq" name="maintenance_freq" min="1" max="12" required />
+                <label for="maintenance_freq">Maintenance Frequency (months)</label>
+            </div>
 
-                <button type="submit" class="btn waves-effect waves-light teal">Add Maintenance Record</button>
-            </form>
-        </div>
+            <button type="submit" class="btn waves-effect waves-light">
+                Add Maintenance Record
+            </button>
+        </form>
     </div>
 </div>
+</div>
 
-<!-- Materialize JS -->
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
+        defer
+></script>
 
 <script>
-    $(document).ready(function() {
-        $('.sidenav').sidenav();
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize sidenav
+        var sidenavElems = document.querySelectorAll('.sidenav');
+        M.Sidenav.init(sidenavElems);
     });
 
     function showSuccess() {
@@ -68,15 +170,18 @@
         const error = urlparam.get('error');
 
         if (success === "Details_added") {
-            alert("Details Added Successfully!!!");
+            M.toast({html: 'Details Added Successfully!', classes: 'teal lighten-1'});
         } else if (error === "failed") {
-            alert("ERROR: Gun Not Found");
+            M.toast({html: 'Error: Gun Not Found', classes: 'red lighten-1'});
         } else if (error === "server_error") {
-            alert("Server Error");
+            M.toast({html: 'Server Error', classes: 'red lighten-1'});
         }
     }
 
     window.onload = showSuccess;
+     $(document).ready(function () {
+        $(".sidenav").sidenav();
+    });
 </script>
 </body>
 </html>

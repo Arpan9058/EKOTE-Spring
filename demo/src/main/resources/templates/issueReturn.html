@@ -1,24 +1,123 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Issue Gun</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Materialize CSS + FontAwesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        body {
+          background: linear-gradient(135deg, #e8f5e9, #dcedc8);
+          font-family: 'Roboto', sans-serif;
+          padding-bottom: 50px;
+        }
+
+        h1 {
+          color: #4caf50;
+          font-weight: 700;
+          margin-top: 40px;
+          margin-bottom: 40px;
+          text-align: center;
+          font-size: 2.5rem;
+        }
+
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 0 15px 40px;
+        }
+
+        .card,
+        .card-panel {
+          border-radius: 12px;
+          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+          padding: 25px 30px;
+          margin-bottom: 30px;
+          background-color: #fff;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover,
+        .card-panel:hover {
+          transform: translateY(-5px);
+          box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+          font-weight: 600;
+          font-size: 1.6rem;
+          margin-bottom: 20px;
+          color: #4caf50;
+        }
+
+        .input-field input[type="text"] {
+          border-bottom: 1px solid #4caf50 !important;
+        }
+
+        .input-field label {
+          color: #4caf50 !important;
+          font-weight: 500;
+        }
+
+        .input-field input:focus + label {
+          color: #388e3c !important;
+        }
+
+        .input-field input[type="text"]:focus {
+          border-bottom: 2px solid #388e3c !important;
+          box-shadow: 0 1px 0 0 #388e3c !important;
+        }
+
+        .btn {
+          background-color: #4caf50;
+          font-weight: 600;
+          transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+          background-color: #388e3c;
+        }
+
+        .card-content p {
+          font-size: 1rem;
+          color: #333;
+          margin: 8px 0;
+        }
+
+        .red-text {
+          margin-top: 20px;
+          font-weight: 600;
+          font-size: 1.2rem;
+        }
+         @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
+    </style>
 </head>
+
 <body>
 <!-- ✅ Include Side Navigation -->
 <div th:replace="fragments/sidenav :: sidenav"></div>
 
-<div class="container">
-    <h1 class="center-align">Issue And Return Gun</h1>
+<div class="main-content">
 
-   <div class="card-panel">
+<div class="container">
+    <h1>Issue And Return Gun</h1>
+
+    <div class="card-panel">
         <form th:action="@{/issue/findUser}" method="get" class="col s12">
             <div class="input-field">
+                <input type="text" id="user_id" name="user_id" required />
                 <label for="user_id">Enter User ID:</label>
-                <input type="text" id="user_id" name="user_id" required>
             </div>
             <button type="submit" class="btn waves-effect waves-light">Search User</button>
         </form>
@@ -40,10 +139,10 @@
                 <span class="card-title">Issue Gun</span>
                 <form th:action="@{/issue}" method="post">
                     <div class="input-field">
-                        <input type="text" id="uniqueIdentifier" name="uniqueIdentifier" required>
-                        <label for="uniqueIdentifier">Enter Unique Identifier Issue:</label>
+                        <input type="text" id="uniqueIdentifier" name="uniqueIdentifier" required />
+                        <label for="uniqueIdentifier">Enter Unique Identifier to Issue:</label>
                     </div>
-                    <input type="hidden" name="userId" th:value="${user.id}">
+                    <input type="hidden" name="userId" th:value="${user.id}" />
                     <button type="submit" class="btn waves-effect waves-light">Issue Gun</button>
                 </form>
             </div>
@@ -55,10 +154,10 @@
                 <span class="card-title">Return Gun</span>
                 <form th:action="@{/return}" method="post">
                     <div class="input-field">
-                        <input type="text" id="return_gun_id" name="uniqueIdentifier" required>
+                        <input type="text" id="return_gun_id" name="uniqueIdentifier" required />
                         <label for="return_gun_id">Enter Unique Identifier to Return:</label>
                     </div>
-                    <input type="hidden" name="userId" th:value="${user.id}">
+                    <input type="hidden" name="userId" th:value="${user.id}" />
                     <button type="submit" class="btn waves-effect waves-light">Return Gun</button>
                 </form>
             </div>
@@ -68,19 +167,30 @@
     <!-- ❌ User not found -->
     <p th:if="${userNotFound}" class="red-text center-align">User not found.</p>
 </div>
+</div>
 
 <!-- Materialize JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script>
     M.AutoInit();
+
     /* ✅ Show error alerts if present */
     const urlParams = new URLSearchParams(window.location.search);
     const error = urlParams.get('error');
-    if (error === "gun_not_found") alert("Input Gun is not found in stock");
-    else if (error === "user_not_found") alert("User not Found");
-    else if (error === "server_error") alert("Server Error please try again later");
-    else if (error === "gun_not_available") alert("Gun is not available at this time");
-    else if (error === "gun_already_issued") alert("Gun already Issued");
+    if (error === "gun_not_found")
+      alert("Input Gun is not found in stock");
+    else if (error === "user_not_found")
+      alert("User not Found");
+    else if (error === "server_error")
+      alert("Server Error please try again later");
+    else if (error === "gun_not_available")
+      alert("Gun is not available at this time");
+    else if (error === "gun_already_issued")
+      alert("Gun already Issued");
+     $(document).ready(function () {
+        $(".sidenav").sidenav();
+    });
 </script>
 </body>
+
 </html>

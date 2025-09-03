@@ -5,172 +5,328 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>E-KOTE</title>
 
-    <!-- Materialize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
     <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
     />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
     <style>
-        /* Include your inline styles here or move to style.css */
+        /* Basic Reset and Font */
         body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
+          font-family: 'Roboto', sans-serif;
+          margin: 0;
+          padding: 0;
+          background: linear-gradient(135deg, #e6f4ea 0%, #d0e8c8 100%);
+          color: #2c6b2f;
+          overflow-x: hidden;
         }
+
+        /* Sticky Navbar with shadow */
         nav {
-            background-color: #4caf50 !important;
+          background-color: #4caf50 !important;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+          transition: background-color 0.3s ease;
+        }
+        nav.scrolled {
+          background-color: #388e3c !important;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
         .brand-logo {
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-            text-transform: uppercase;
+          font-size: 2rem;
+          font-weight: 900;
+          letter-spacing: 3px;
+          color: white;
+          text-transform: uppercase;
+          padding-left: 15px;
         }
         .nav-wrapper {
-            padding: 0 20px;
+          padding: 0 20px;
         }
         .nav-wrapper a {
-            color: white !important;
+          color: white !important;
+          font-weight: 600;
+          transition: color 0.3s ease;
         }
+        .nav-wrapper a:hover {
+          color: #aed581 !important;
+        }
+
+        /* Hero Parallax */
         .parallax-container {
-            height: 400px;
-            position: relative;
+          height: 550px;
+          position: relative;
+          overflow: hidden;
         }
-        .parallax img {
-            object-fit: cover;
-            height: 100%;
-            width: 100%;
+        .parallax-container .parallax img {
+          object-fit: cover;
+          height: 110%; /* Slight zoom for effect */
+          width: 100%;
+          filter: brightness(0.6);
+          transition: transform 1.5s ease;
         }
+        .parallax-container:hover .parallax img {
+          transform: scale(1.05);
+          filter: brightness(0.75);
+        }
+
+        /* Hero Text Overlay */
+        .hero-text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          color: #fff;
+          text-align: center;
+          max-width: 90%;
+          z-index: 10;
+          text-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+        }
+        .hero-text h1 {
+          font-size: 3.5rem;
+          font-weight: 900;
+          letter-spacing: 5px;
+          margin-bottom: 0.3rem;
+        }
+        .hero-text h5 {
+          font-weight: 500;
+          font-size: 1.3rem;
+          letter-spacing: 2px;
+        }
+
+        /* Card Styles */
         .card {
-            margin: 30px 0;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
+          margin: 40px 0;
+          border-radius: 15px;
+          box-shadow: 0 12px 30px rgba(44, 107, 47, 0.25);
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
+          background: linear-gradient(135deg, #dcedc8 0%, #a5d6a7 100%);
         }
         .card:hover {
-            transform: translateY(-10px);
+          transform: translateY(-15px);
+          box-shadow: 0 20px 40px rgba(44, 107, 47, 0.4);
         }
         .card-content {
-            padding: 30px;
+          padding: 40px 35px;
+          color: #1b3a1b;
         }
         .card-title {
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #333;
+          font-weight: 900;
+          font-size: 2.5rem;
+          margin-bottom: 25px;
+          text-align: center;
+          letter-spacing: 2px;
+          text-shadow: 0 0 10px rgba(255 255 255 / 0.4);
         }
-        .card h6, .card p {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #555;
+        .card h6,
+        .card p,
+        .card ul li {
+          font-size: 1.1rem;
+          line-height: 1.7;
+          margin-bottom: 15px;
+          font-weight: 500;
         }
-        .form-field input, .form-field select {
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            width: 100%;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+        .card ul li strong {
+          color: #2e7d32;
         }
-        .form-field input:focus {
-            border: 1px solid #4caf50;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-        .btn {
-            width: 100%;
-            height: 7vh;
-            background-color: #4caf50;
-            font-size: 1.1rem;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        .btn:hover {
-            background-color: #45a049;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-        }
-        .footer {
-            background-color: #4caf50;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-        .footer a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .footer a:hover {
-            text-decoration: underline;
-        }
+
+        /* About Section */
         .about-section {
-            padding: 50px 0;
-            background: linear-gradient(to right, #e8f5e9, #dcedc8);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            margin-top: 40px;
+          padding: 60px 0;
+          background: #c5e1a5;
+          border-radius: 20px;
+          box-shadow: 0 15px 30px rgba(44, 107, 47, 0.2);
+          margin: 60px auto;
+          max-width: 900px;
+          color: #1b3a1b;
         }
         .about-section .card-content {
-            padding: 40px;
+          padding: 40px;
         }
-        .center-align {
-            text-align: center;
+        .about-section h3 {
+          font-weight: 900;
+          font-size: 2.8rem;
+          margin-bottom: 1.5rem;
+          text-align: center;
+          letter-spacing: 3px;
+          text-shadow: 0 0 8px rgba(255 255 255 / 0.35);
         }
-        @media screen and (max-width: 600px) {
-            .card {
-                margin: 20px 0;
-            }
-            .footer {
-                font-size: 1rem;
-            }
+        .about-section h5 {
+          margin-top: 25px;
+          color: #33691e;
+          font-weight: 700;
+          font-size: 1.4rem;
+          margin-bottom: 15px;
         }
+
+        /* Help & Support Section */
+        #help-support-section {
+          margin: 60px auto 80px;
+          padding: 35px 40px;
+          max-width: 900px;
+          background-color: #ffffffcc;
+          border-radius: 20px;
+          box-shadow: 0 10px 25px rgba(44, 107, 47, 0.15);
+          color: #2c6b2f;
+        }
+        #help-support-section h4 {
+          text-align: center;
+          font-weight: 900;
+          font-size: 2.7rem;
+          margin-bottom: 1.2rem;
+          letter-spacing: 3px;
+          text-shadow: 0 0 10px rgba(44, 107, 47, 0.3);
+        }
+        #help-support-section p {
+          font-weight: 500;
+          font-size: 1.15rem;
+          margin-bottom: 2rem;
+          text-align: center;
+          color: #3b8e3b;
+        }
+        #help-support-section .section h5 {
+          color: #2e7d32;
+          font-weight: 700;
+          font-size: 1.5rem;
+          border-bottom: 3px solid #4caf50;
+          padding-bottom: 6px;
+          margin-bottom: 1.5rem;
+        }
+        .faq-item {
+          margin-bottom: 25px;
+          font-size: 1.1rem;
+          line-height: 1.6;
+        }
+        .faq-item strong {
+          font-weight: 700;
+          color: #1b3a1b;
+        }
+        .faq-item ul li {
+          margin-left: 20px;
+          margin-bottom: 8px;
+        }
+        #help-support-section .contact-info {
+          background: #4caf50;
+          color: #d9f9d9;
+          padding: 25px 30px;
+          border-radius: 15px;
+          font-weight: 600;
+          box-shadow: 0 10px 30px rgba(44, 107, 47, 0.3);
+        }
+        #help-support-section .contact-info a {
+          color: #e8f5e9;
+          font-weight: 700;
+          text-decoration: none;
+          transition: color 0.3s ease;
+        }
+        #help-support-section .contact-info a:hover {
+          color: #b2dfdb;
+          text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+          background-color: #388e3c;
+          color: white;
+          text-align: center;
+          padding: 30px 0;
+          font-size: 1.2rem;
+          letter-spacing: 0.5px;
+          font-weight: 600;
+          box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.1);
+          margin-top: 80px;
+        }
+        .footer a {
+          color: #aed581;
+          text-decoration: none;
+          font-weight: 700;
+          margin: 0 12px;
+          transition: color 0.3s ease;
+        }
+        .footer a:hover {
+          color: #dcedc8;
+          text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+          .hero-text h1 {
+            font-size: 2.5rem;
+          }
+          .hero-text h5 {
+            font-size: 1rem;
+          }
+          .card-content {
+            padding: 25px 20px;
+          }
+          #help-support-section,
+          .about-section {
+            margin: 30px 20px;
+            padding: 30px 25px;
+          }
+        }
+       html {
+  scroll-behavior: smooth;
+}
+
     </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav>
+<nav id="navbar">
     <div class="nav-wrapper">
         <a href="#" class="brand-logo">E-KOTE</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-            <li><a href="#login">Login</a></li>
+            <li><a href="/login">Login</a></li>
             <li><a href="/register">Register</a></li>
             <li><a href="#about-us"><span class="fa fa-address-card-o"></span>&nbsp;About Us</a></li>
-            <li><a href="#help"><span class="fa fa-phone"></span>&nbsp;Helpline & Support</a></li>
+            <li><a href="#help-support-section"><span class="fa fa-phone"></span>&nbsp;Helpline & Support</a></li>
         </ul>
     </div>
 </nav>
 
-<!-- Parallax Section -->
 <div class="parallax-container">
-    <div class="parallax"><img th:src="@{/img/02.jpg}" alt="Hero Image" /></div>
+    <div class="parallax">
+        <img th:src="@{/img/02.jpg}" alt="Hero Image" />
+    </div>
+    <div class="hero-text">
+        <h1>E-KOTE</h1>
+        <h5>Next-Gen Weapon Management for Indian Defence Forces</h5>
+    </div>
 </div>
 
-<!-- Welcome Section -->
 <div class="container">
     <div class="row">
         <div class="col s12 m8 offset-m2">
             <div class="card">
                 <div class="card-content">
                     <h3 class="card-title">Welcome to E-KOTE</h3>
-                    <h6>The advanced weapon management solution designed specifically for the Indian Defence Force Services.</h6>
+                    <h6>
+                        The advanced weapon management solution designed specifically for the
+                        Indian Defence Force Services.
+                    </h6>
                     <p>
-                        E-KOTE leverages cutting-edge barcode technology to ensure precise tracking, enhanced security, and efficient management of weapon inventories.
-                        Our platform automates and streamlines the entire process, providing an effortless way to issue, return, and monitor weapons with unparalleled accuracy and control.
+                        E-KOTE leverages cutting-edge barcode technology to ensure precise tracking,
+                        enhanced security, and efficient management of weapon inventories.
+                        Our platform automates and streamlines the entire process, providing an effortless
+                        way to issue, return, and monitor weapons with unparalleled accuracy and control.
                     </p>
                     <p><strong>Why E-KOTE?</strong></p>
                     <ul>
-                        <li><strong>Accurate Tracking:</strong> Easily track each weapon's history with date and time stamps. Scan the barcode to retrieve real-time data on any weapon.</li>
-                        <li><strong>Enhanced Security:</strong> Automates record-keeping, ensuring only authorized personnel can access weapons, enhancing accountability.</li>
-                        <li><strong>Efficient Management:</strong> Streamlines administrative tasks, allowing personnel to focus on their duties while the system handles issuance, returns, and maintenance scheduling.</li>
+                        <li>
+                            <strong>Accurate Tracking:</strong> Easily track each weapon's history with date and time stamps.
+                            Scan the barcode to retrieve real-time data on any weapon.
+                        </li>
+                        <li>
+                            <strong>Enhanced Security:</strong> Automates record-keeping, ensuring only authorized personnel
+                            can access weapons, enhancing accountability.
+                        </li>
+                        <li>
+                            <strong>Efficient Management:</strong> Streamlines administrative tasks, allowing personnel to focus on their duties while the system handles issuance,
+                            returns, and maintenance scheduling.
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -178,83 +334,102 @@
     </div>
 </div>
 
-<!-- About Us Section -->
 <section id="about-us" class="about-section">
-    <div class="container">
-        <div class="row">
-            <div class="col s12">
-                <div class="card">
-                    <div class="card-content">
-                        <h3 class="card-title">About Us</h3>
-                        <h5>Who We Are:</h5>
-                        <p>
-                            At E-KOTE, we believe in enhancing the efficiency and security of weapon management systems. Our barcode-based tracking system enables real-time monitoring,
-                            ensuring accurate inventory and the highest levels of accountability.
-                        </p>
-                        <h5>Mission:</h5>
-                        <p>
-                            Our mission is to replace outdated manual record-keeping processes with a modern, automated system that tracks weapons, their usage, maintenance, and history.
-                            Through this innovative approach, we aim to reduce errors and provide a robust, secure weapon management system.
-                        </p>
-                        <h5>Vision:</h5>
-                        <p>
-                            Our vision is to revolutionize the weapon management system in defense services by providing a secure and transparent way to manage every weapon issued,
-                            cleaned, or maintained within the defense infrastructure.
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <div class="card">
+        <div class="card-content">
+            <h3>About Us</h3>
+            <h5>Who We Are:</h5>
+            <p>
+                At E-KOTE, we believe in enhancing the efficiency and security of weapon management systems.
+                Our barcode-based tracking system enables real-time monitoring, ensuring accurate inventory
+                and the highest levels of accountability.
+            </p>
+            <h5>Mission:</h5>
+            <p>
+                Our mission is to replace outdated manual record-keeping processes with a modern,
+                automated system that tracks weapons, their usage, maintenance, and history.
+                Through this innovative approach, we aim to reduce errors and provide a robust,
+                secure weapon management system.
+            </p>
+            <h5>Vision:</h5>
+            <p>
+                Our vision is to revolutionize the weapon management system in defense services by
+                providing a secure and transparent way to manage every weapon issued, cleaned,
+                or maintained within the defense infrastructure.
+            </p>
         </div>
     </div>
 </section>
 
-<!-- Login Form Section -->
-<section id="login" class="about-section">
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m6 offset-m3">
-                <div class="card">
-                    <div class="card-content">
-                        <h4 class="center-align">Login</h4>
-                        <form th:action="@{/login}" method="post">
-                            <div class="form-field">
-                                <input type="email" name="user_mail" placeholder="Enter E-mail" required />
-                            </div>
-                            <div class="form-field">
-                                <input type="password" name="user_pass" placeholder="Enter Password" required />
-                            </div>
-                            <div class="form-field">
-                                <button type="submit" class="btn">Login</button>
-                            </div>
-                        </form>
-                        <div class="center-align" style="color:red;" th:if="${error}">
-                            <p th:text="${error}"></p>
-                        </div>
-                        <div class="center-align">
-                            <a href="/register">Don't have an account? Sign up</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container" id="help-support-section">
+    <h4>Help & Support</h4>
+    <p>
+        Welcome to our Help & Support page! Here you’ll find quick answers to common
+        questions and useful information to help you get the most out of the platform.
+    </p>
+
+    <div class="section">
+        <h5>Frequently Asked Questions (FAQ)</h5>
+
+        <div class="faq-item">
+            <p><strong>1. How to Register an Account?</strong></p>
+            <ul>
+                <li>Go to the <a th:href="@{/register}">Registration Page</a>.</li>
+                <li>Enter your email, password, name, and role.</li>
+                <li>Click <strong>Submit</strong> to create your account.</li>
+            </ul>
+        </div>
+
+        <div class="faq-item">
+            <p><strong>2. How to Log In?</strong></p>
+            <ul>
+                <li>Go to the <a th:href="@{/login}">Login Page</a>.</li>
+                <li>Enter your email and password.</li>
+                <li>Click <strong>Log In</strong> to access your account.</li>
+            </ul>
         </div>
     </div>
-</section>
 
-<!-- Footer -->
-<div class="footer">
-    <p>&copy; 2024 E-KOTE. All Rights Reserved.</p>
-    <p><a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
+    <div class="section">
+        <h5>Contact Support</h5>
+        <div class="contact-info">
+            <p>For further assistance, contact our support team:</p>
+            <ul>
+                <li><strong>Email:</strong> <a href="mailto:sambhav9058@gmail.com">sambhav9058@gmail.com</a></li>
+                <li><strong>Phone:</strong> +91 98706 02507</li>
+                <li>We’re here to help during business hours (9 AM - 6 PM, Monday to Friday).</li>
+            </ul>
+        </div>
+    </div>
 </div>
 
-<!-- Materialize JS and jQuery -->
+<div class="footer">
+    <p>&copy; 2024 E-KOTE. All Rights Reserved.</p>
+    <p>
+        <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a>
+    </p>
+</div>
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"
-></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
 <script>
     $(document).ready(function () {
-        $(".parallax").parallax();
-        $("select").formSelect();
+      $("select").formSelect();
+
+      // Initialize parallax
+      var elems = document.querySelectorAll('.parallax');
+      M.Parallax.init(elems);
+
+      // Add shadow to navbar on scroll
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 30) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
     });
 </script>
 </body>

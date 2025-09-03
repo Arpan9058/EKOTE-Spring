@@ -1,63 +1,186 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Gun Information Form</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
     <style>
+        body {
+          background: #e8f5e9;
+          font-family: 'Roboto', sans-serif;
+          padding-bottom: 60px;
+        }
+
         .container {
-            width: 60%;
-            margin: auto;
-            margin-top: 40px;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+          max-width: 700px;
+          margin: 40px auto;
+          background: white;
+          padding: 40px 50px;
+          border-radius: 12px;
+          box-shadow: 0 12px 30px rgba(46, 125, 50, 0.15);
         }
-        table th {
-            background-color: #f2f2f2;
+
+        h4,
+        h5 {
+          color: #2e7d32;
+          font-weight: 700;
+          letter-spacing: 1.5px;
+          margin-bottom: 30px;
+          text-transform: uppercase;
+          text-align: center;
+          text-shadow: 1px 1px 4px rgba(46, 125, 50, 0.3);
         }
+
+        form {
+          margin-bottom: 40px;
+        }
+
+        .input-field input[type="text"],
+        .input-field input[type="number"],
+        .input-field input[type="date"] {
+          border-bottom: 2px solid #81c784 !important;
+          font-size: 1.1rem;
+          padding-left: 12px;
+        }
+
+        .input-field label {
+          color: #4caf50 !important;
+          font-weight: 600;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .input-field input:focus+label {
+          color: #2e7d32 !important;
+          font-weight: 700;
+          font-size: 0.85rem;
+          transform: translateY(-18px);
+        }
+
+        .input-field input[type="text"]:focus,
+        .input-field input[type="number"]:focus,
+        .input-field input[type="date"]:focus {
+          border-bottom: 2px solid #2e7d32 !important;
+          box-shadow: 0 2px 8px rgba(46, 125, 50, 0.3) !important;
+        }
+
+        table.highlight {
+          box-shadow: 0 8px 20px rgba(46, 125, 50, 0.12);
+          border-radius: 8px;
+          overflow: hidden;
+        }
+
+        table.highlight th {
+          background-color: #a5d6a7 !important;
+          color: #1b5e20 !important;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+
+        table.highlight td,
+        table.highlight th {
+          text-align: center !important;
+          vertical-align: middle !important;
+          padding: 12px 18px !important;
+        }
+
+        table.highlight tbody tr:hover {
+          background-color: #c8e6c9 !important;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+        }
+
+        button.btn {
+          display: block;
+          margin: 0 auto;
+<!--          padding: 14px 48px;-->
+          border-radius: 30px;
+          background-color: #388e3c !important;
+          box-shadow: 0 6px 15px rgba(56, 142, 60, 0.5);
+          font-weight: 700;
+          letter-spacing: 1px;
+          font-size: 1.2rem;
+          text-transform: uppercase;
+          transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button.btn:hover {
+          background-color: #2e7d32 !important;
+          box-shadow: 0 9px 25px rgba(46, 125, 50, 0.6);
+        }
+
+        h5.red-text,
+        h5.green-text {
+          margin-top: 20px;
+          font-weight: 600;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 720px) {
+          .container {
+            padding: 30px 20px;
+            width: 90%;
+          }
+
+          button.btn {
+            width: 100%;
+            font-size: 1rem;
+          }
+        }
+         @media only screen and (min-width: 993px) {
+    .main-content {
+        margin-left: 300px; /* width of the sidenav */
+    }
+}
     </style>
 </head>
+
 <body>
 <div th:replace="fragments/sidenav :: sidenav"></div>
 
+<div class="main-content">
+
 <div class="container">
-    <h4 class="center-align">Gun Information Form</h4>
+    <h4>Gun Information Form</h4>
 
     <!-- FORM 1: Generate identifiers -->
     <form th:action="@{/gunForm}" method="post">
         <div class="input-field">
-            <input type="text" id="gunName" name="gunName" th:value="${gunName}" required>
+            <input type="text" id="gunName" name="gunName" th:value="${gunName}" required />
             <label for="gunName" class="active" th:if="${gunName != null}">Gun Name</label>
             <label for="gunName" th:if="${gunName == null}">Gun Name</label>
         </div>
         <div class="input-field">
-            <input type="text" id="gunModel" name="gunModel" th:value="${gunModel}" required>
+            <input type="text" id="gunModel" name="gunModel" th:value="${gunModel}" required />
             <label for="gunModel" class="active" th:if="${gunModel != null}">Gun Model</label>
             <label for="gunModel" th:if="${gunModel == null}">Gun Model</label>
         </div>
         <div class="input-field">
-            <input type="number" id="quantity" name="quantity" min="1" th:value="${quantity}" required>
+            <input type="number" id="quantity" name="quantity" min="1" th:value="${quantity}" required />
             <label for="quantity" class="active" th:if="${quantity != null}">Quantity</label>
             <label for="quantity" th:if="${quantity == null}">Quantity</label>
         </div>
-        <button type="submit" class="btn">Generate Table</button>
+        <button type="submit" class="btn waves-effect waves-light">Generate Table</button>
     </form>
 
     <h5 th:if="${error}" class="red-text center-align" th:text="${error}"></h5>
     <h5 th:if="${success}" class="green-text center-align" th:text="${success}"></h5>
 
     <!-- FORM 2: Submit detailed gun info -->
-    <form th:if="${identifiers != null}" th:action="@{/gunForm/addSpecific}" method="post" style="margin-top: 30px;">
-        <!-- Hidden inputs to resend gunName, gunModel, quantity -->
+    <form th:if="${identifiers != null}" th:action="@{/gunForm/addSpecific}" method="post" style="margin-top: 40px;">
         <input type="hidden" name="gunName" th:value="${gunName}" />
         <input type="hidden" name="gunModel" th:value="${gunModel}" />
         <input type="hidden" name="quantity" th:value="${quantity}" />
 
-        <h5 class="center-align">Gun Information Table</h5>
-        <table class="highlight">
+        <h5>Gun Information Table</h5>
+        <table class="highlight responsive-table">
             <thead>
             <tr>
                 <th>Gun Identifier</th>
@@ -68,29 +191,28 @@
             <tbody>
             <tr th:each="id, iter : ${identifiers}">
                 <td>
-                    <input type="text"
-                           th:name="'identifiers[' + ${iter.index} + ']'"
-                           th:value="${id}"
-                           readonly />
+                    <input type="text" th:name="'identifiers[' + ${iter.index} + ']'" th:value="${id}" readonly />
                 </td>
                 <td>
-                    <input type="date"
-                           th:name="'manufacturedDates[' + ${iter.index} + ']'"
-                           required />
+                    <input type="date" th:name="'manufacturedDates[' + ${iter.index} + ']'" required />
                 </td>
                 <td>
-                    <input type="text"
-                           th:name="'manufacturedPlaces[' + ${iter.index} + ']'"
-                           required />
+                    <input type="text" th:name="'manufacturedPlaces[' + ${iter.index} + ']'" required />
                 </td>
             </tr>
             </tbody>
         </table>
-        <button type="submit" class="btn" style="margin-top: 20px;">Submit Guns Information</button>
+        <button type="submit" class="btn waves-effect waves-light" style="margin-top: 30px;">Submit Guns Information</button>
     </form>
 </div>
-
+</div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script>M.AutoInit();</script>
+<script>
+    M.AutoInit();
+     $(document).ready(function () {
+        $(".sidenav").sidenav();
+    });
+</script>
 </body>
+
 </html>

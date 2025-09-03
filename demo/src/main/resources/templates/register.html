@@ -6,19 +6,74 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="/css/style.css" rel="stylesheet" type="text/css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #e8f5e9, #dcedc8);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
         .card {
-            max-width: 400px;
-            margin: 50px auto;
+            width: 100%;
+            max-width: 500px;
             border-radius: 15px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+            background: #fff;
         }
         .card-title {
             text-align: center;
             margin-bottom: 20px;
+            font-weight: bold;
+            color: #4caf50;
         }
         .form-field {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .form-field input, .form-field select {
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        .form-field input:focus {
+            border-color: #4caf50;
+            box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+        }
+       .form-field {
+            display: flex;
+            justify-content: space-between; /* keeps them apart */
+            gap: 10px; /* spacing between buttons */
+        }
+
+        .form-field .btn {
+            flex: 1;          /* make both take equal width */
+            text-align: center;
+        }
+
+        .footer {
+            background-color: #4caf50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -27,49 +82,48 @@
 <!-- Navbar Fragment -->
 <div th:replace="fragments/normalnav :: normalnav"></div>
 
-<div class="row">
-    <div class="col s12 m6 offset-m3"> <!-- Centered column -->
-        <div class="card">
-            <div class="card-content black-text">
-                <h4 style="text-align: center; margin-bottom: -10px">Register</h4>
-            </div>
-            <div class="card-content">
-                <form th:action="@{/register}" method="post">
-                    <div class="form-field">
-                        <input type="text" name="user_name" placeholder="Enter Name" required/>
-                    </div>
-                    <div class="form-field">
-                        <input type="email" name="user_mail" placeholder="Enter E-mail" required/>
-                    </div>
-                    <div class="form-field">
-                        <input type="password" name="user_pass" placeholder="Enter Password" required/>
-                    </div>
-                    <div class="form-field">
-                        <input type="text" name="user_id" placeholder="Enter ID Card No." required/>
-                    </div>
-                    <div class="form-field">
-                        <div class="input-field">
-                            <select name="user_role" required>
-                                <option value="" disabled selected>Select Role</option>
-                                <option value="admin">admin</option>
-                                <option value="user">user</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-field">
-                        <button type="submit" class="btn">Register</button>
-                        <button type="reset" class="btn">Reset</button>
-                    </div>
-                </form>
-            </div>
+<!-- Main Content -->
+<div class="main-container">
+    <div class="card">
+        <div class="card-content">
+            <h4 class="card-title">Register</h4>
+            <form th:action="@{/register}" method="post">
+                <div class="form-field">
+                    <input type="text" name="user_name" placeholder="Enter Name" required/>
+                </div>
+                <div class="form-field">
+                    <input type="email" name="user_mail" placeholder="Enter E-mail" required/>
+                </div>
+                <div class="form-field">
+                    <input type="password" name="user_pass" placeholder="Enter Password" required/>
+                </div>
+                <div class="form-field">
+                    <input type="text" name="user_id" placeholder="Enter ID Card No." required/>
+                </div>
+                <div class="form-field input-field">
+                    <select name="user_role" required>
+                        <option value="" disabled selected>Select Role</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+                <div class="form-field">
+                    <button type="submit" class="btn green">Register</button>
+                    <button type="reset" class="btn grey">Reset</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
+<!-- Footer -->
+<div class="footer">
+    <p>&copy; 2024 E-KOTE. All Rights Reserved.</p>
+    <p><a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms & Conditions</a></p>
+</div>
+
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script>
     $(document).ready(function(){
