@@ -33,7 +33,7 @@ public class QRCodeController {
         }
 
         // ✅ Generate QR Code content
-        String qrCodeContent = "http://localhost:8080/gunDetails/" + gunId;
+        String qrCodeContent = "https://ekote-spring-production.up.railway.app/gunDetails/" + gunId;
         // You can change URL format based on your frontend or detail page
 
         try {

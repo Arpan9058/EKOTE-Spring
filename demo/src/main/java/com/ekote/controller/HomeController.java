@@ -64,7 +64,7 @@ public class HomeController {
 
     @GetMapping("/QRCode")
     public String qr(){
-        return "generateQR";
+        return "generateQr";
     }
 
     @GetMapping("/inventory_management")
