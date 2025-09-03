@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<nav style="background-color: #4CAF50;" th:fragment="normalnav">
+    <div class="nav-wrapper" style="margin-left: 10px; margin-right: 10px">
+        <a th:href="@{/}" class="brand-logo">E-KOTE</a>
+
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+            <li><a th:href="@{/login}">Login</a></li>
+            <li><a th:href="@{/register}">Register</a></li>
+            <li>
+                <a th:href="@{/about-us}">
+                    <span class="fa fa-address-card-o"></span>&nbsp;About Us
+                </a>
+            </li>
+            <li>
+                <a th:href="@{/help}">
+                    <span class="fa fa-phone"></span>&nbsp;Helpline & Support
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</body>
+</html>

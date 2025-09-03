@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+
+<!-- Side Navbar -->
+<div th:replace="fragments/sidenav :: sidenav"></div>
+
+<div class="container">
+    <h4 class="center-align">Add New Gun</h4>
+
+    <!-- Form to Add or Subtract Gun Entry -->
+    <form id="addGunForm" method="post">
+        <div class="input-field">
+            <input type="text" name="gun_name" id="gun_name" required>
+            <label for="gun_name">Gun Name</label>
+        </div>
+        <div class="input-field">
+            <input type="text" name="model" id="model" required>
+            <label for="model">Model</label>
+        </div>
+        <div class="input-field">
+            <input type="number" name="quantity" id="quantity" required>
+            <label for="quantity">Quantity</label>
+        </div>
+        <div class="input-field">
+            <input type="text" name="registered_by" id="registered_by" required>
+            <label for="registered_by">Registered By</label>
+        </div>
+        <div class="input-field">
+            <select name="operation" id="operation">
+                <option value="add" selected>Add</option>
+                <option value="subtract">Subtract</option>
+            </select>
+            <label for="operation">Operation</label>
+        </div>
+        <button type="submit" class="btn blue">Update Inventory</button>
+        <button type="reset" class="btn red">Reset</button>
+    </form>
+
+    <hr>
+    <h5>Guns Stock :</h5>
+    <table id="inventoryTable" class="striped">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Gun Name</th>
+            <th>Model</th>
+            <th>Quantity</th>
+            <th>Registered By</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<!-- Materialize + jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('.sidenav').sidenav();
+        $('select').formSelect();
+        loadInventory();
+
+        $("#addGunForm").submit(function(event) {
+            event.preventDefault();
+
+            var formData = $(this).serialize();  // Serializing form data
+
+            // Optionally check if the operation field is added
+            console.log(formData);  // Check if 'operation' is in the serialized data
+
+            $.ajax({
+                url: "/guns/add",  // Spring Controller endpoint
+                method: "POST",
+                data: formData,
+                contentType: "application/x-www-form-urlencoded", // Form URL encoded data type
+                dataType: "json",  // Expected response data type
+                success: function(response) {
+                    if (response.status === "success") {
+                        M.toast({html: 'Inventory updated successfully!', classes: 'green'});
+                        loadInventory();
+                    } else {
+                        M.toast({html: 'Error: ' + response.message, classes: 'red'});
+                    }
+                },
+                error: function(xhr, status, error) {
+                    M.toast({html: 'Error updating inventory: ' + error, classes: 'red'});
+                }
+            });
+        });
+    });
+
+    function deleteGun(gunId) {
+        if (confirm("Are you sure you want to delete this gun from inventory?")) {
+            $.ajax({
+                url: "/guns/delete/"+gunId,
+                method: "DELETE",
+                data: { gunId: gunId },
+                success: function() {
+                    M.toast({html: 'Gun deleted successfully!', classes: 'green'});
+                    loadInventory();
+                },
+                error: function() {
+                    M.toast({html: 'Error deleting gun.', classes: 'red'});
+                }
+            });
+        }
+    }
+
+    function loadInventory() {
+        $.ajax({
+            url: "/guns/list",
+            method: "GET",
+            dataType: "json",
+            success: function(data) {
+                var tableBody = $("#inventoryTable tbody");
+                tableBody.empty();
+                if (data.length > 0) {
+                    data.forEach(function(gun) {
+                        var row = `
+                            <tr>
+                                <td>${gun.id}</td>
+                                <td>${gun.gunName}</td>
+                                <td>${gun.model}</td>
+                                <td>${gun.quantity}</td>
+                                <td>${gun.registeredBy}</td>
+                                <td>
+                                    <button class="btn red" onclick="deleteGun(${gun.id})">Delete</button>
+                                </td>
+                            </tr>`;
+                        tableBody.append(row);
+                    });
+                } else {
+                    tableBody.append("<tr><td colspan='6'>No guns available in the inventory</td></tr>");
+                }
+            },
+            error: function() {
+                M.toast({html: 'Failed to load inventory.', classes: 'red'});
+            }
+        });
+    }
+</script>
+</body>
+</html>

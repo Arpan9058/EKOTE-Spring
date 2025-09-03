@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gun Information</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .card-content h4 {
+            margin-bottom: 10px;
+        }
+        .table-wrapper {
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            padding: 15px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #00796b;
+            color: white;
+        }
+        .table td {
+            background-color: #f1f1f1;
+        }
+        .container {
+            max-width: 90%;
+            margin: 0 auto;
+        }
+        .user-details {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="section-header">Gun Information</h1>
+
+    <!-- Show current/last Gun details -->
+    <div th:if="${gunDetails != null}">
+        <div class="user-details" th:with="last=${gunDetails}">
+            <h3 class="center">Current Gun Details</h3>
+            <div class="card-content">
+                <h4><strong>Gun Details:</strong></h4>
+                <h5><strong>Unique Identifier: <span th:text="${last.uniqueIdentifier}"></span></strong></h5>
+                <p><strong>Gun Name:</strong> <span th:text="${last.gunName}"></span></p>
+                <p><strong>Maintenance Date:</strong> <span th:text="${last.maintenanceDate}"></span></p>
+                <p><strong>Next Maintenance Date:</strong> <span th:text="${last.nextMaintenanceDate}"></span></p>
+                <p><strong>Issue Date:</strong> <span th:text="${last.issueDate}"></span></p>
+                <p><strong>Return Date:</strong> <span th:text="${last.returnDate}"></span></p>
+                <p><strong>Status:</strong> <span th:text="${last.status}"></span></p>
+
+                <h4><strong>User Details:</strong></h4>
+                <p><strong>Name:</strong> <span th:text="${last.name}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${last.email}"></span></p>
+                <p><strong>Role:</strong> <span th:text="${last.role}"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Past Records Table -->
+    <div th:if="${pastRecords != null and !pastRecords.isEmpty()}" class="table-wrapper">
+        <h4 class="center"><strong>Past Records</strong></h4>
+        <table class="striped highlight responsive-table">
+            <thead>
+            <tr>
+                <th>Gun Name</th>
+                <th>Model</th>
+                <th>Registered By</th>
+                <th>Maintenance Date</th>
+                <th>Next Maintenance</th>
+                <th>Issue Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+                <th>User Name</th>
+                <th>User Email</th>
+                <th>User Role</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="gun : ${pastRecords}">
+                <td th:text="${gun.gunName}"></td>
+                <td th:text="${gun.model}"></td>
+                <td th:text="${gun.registeredBy}"></td>
+                <td th:text="${gun.maintenanceDate}"></td>
+                <td th:text="${gun.nextMaintenanceDate}"></td>
+                <td th:text="${gun.issueDate}"></td>
+                <td th:text="${gun.returnDate}"></td>
+                <td th:text="${gun.status}"></td>
+                <td th:text="${gun.name}"></td>
+                <td th:text="${gun.email}"></td>
+                <td th:text="${gun.role}"></td>
+            </tr>
+            <tr th:if="${pastRecords == null or pastRecords.isEmpty()}">
+                <td colspan="11" class="center-align">No data found.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <p th:if="${pastRecords == null or pastRecords.isEmpty()}" class="center-align">
+        No past records found.
+    </p>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>M.AutoInit();</script>
+</body>
+</html>

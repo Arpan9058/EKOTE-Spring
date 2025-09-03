@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Gun</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<!-- ✅ Include Side Navigation -->
+<div th:replace="fragments/sidenav :: sidenav"></div>
+
+<div class="container">
+    <h1 class="center-align">Issue And Return Gun</h1>
+
+   <div class="card-panel">
+        <form th:action="@{/issue/findUser}" method="get" class="col s12">
+            <div class="input-field">
+                <label for="user_id">Enter User ID:</label>
+                <input type="text" id="user_id" name="user_id" required>
+            </div>
+            <button type="submit" class="btn waves-effect waves-light">Search User</button>
+        </form>
+    </div>
+
+    <!-- ✅ Show user details if found -->
+    <div th:if="${user != null}">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">User Details</span>
+                <p><strong>Name:</strong> <span th:text="${user.name}"></span></p>
+                <p><strong>Email:</strong> <span th:text="${user.mail}"></span></p>
+            </div>
+        </div>
+
+        <!-- 📦 Issue Gun -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Issue Gun</span>
+                <form th:action="@{/issue}" method="post">
+                    <div class="input-field">
+                        <input type="text" id="uniqueIdentifier" name="uniqueIdentifier" required>
+                        <label for="uniqueIdentifier">Enter Unique Identifier Issue:</label>
+                    </div>
+                    <input type="hidden" name="userId" th:value="${user.id}">
+                    <button type="submit" class="btn waves-effect waves-light">Issue Gun</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 🔄 Return Gun -->
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">Return Gun</span>
+                <form th:action="@{/return}" method="post">
+                    <div class="input-field">
+                        <input type="text" id="return_gun_id" name="uniqueIdentifier" required>
+                        <label for="return_gun_id">Enter Unique Identifier to Return:</label>
+                    </div>
+                    <input type="hidden" name="userId" th:value="${user.id}">
+                    <button type="submit" class="btn waves-effect waves-light">Return Gun</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ❌ User not found -->
+    <p th:if="${userNotFound}" class="red-text center-align">User not found.</p>
+</div>
+
+<!-- Materialize JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>
+    M.AutoInit();
+    /* ✅ Show error alerts if present */
+    const urlParams = new URLSearchParams(window.location.search);
+    const error = urlParams.get('error');
+    if (error === "gun_not_found") alert("Input Gun is not found in stock");
+    else if (error === "user_not_found") alert("User not Found");
+    else if (error === "server_error") alert("Server Error please try again later");
+    else if (error === "gun_not_available") alert("Gun is not available at this time");
+    else if (error === "gun_already_issued") alert("Gun already Issued");
+</script>
+</body>
+</html>

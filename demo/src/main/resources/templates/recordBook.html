@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .container {
+            max-width: 90%;
+            margin: 0 auto;
+            padding-top: 20px;
+        }
+        .table th, .table td {
+            padding: 15px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #00796b;
+            color: white;
+        }
+        .table td {
+            background-color: #f1f1f1;
+        }
+        .table-wrapper {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<!-- ✅ Include Side Navigation -->
+<div th:replace="fragments/sidenav :: sidenav"></div>
+
+<h1 class="center-align">Gun Record Book</h1>
+
+<div class="table-wrapper">
+    <table class="striped highlight responsive-table">
+        <thead>
+        <tr>
+            <th>Gun Identifier</th>
+            <th>User Name</th>
+            <th>User Email</th>
+            <th>User Role</th>
+            <th>Gun Name</th>
+            <th>Model</th>
+            <th>Registered By</th>
+            <th>Manufactured Date</th>
+            <th>Manufactured Place</th>
+            <th>Issue Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- ✅ Loop through list from controller -->
+        <tr th:each="gun : ${recordBookList}">
+            <td th:text="${gun.uniqueIdentifier}"></td>
+            <td th:text="${gun.Name}"></td>
+            <td th:text="${gun.Email}"></td>
+            <td th:text="${gun.role}"></td>
+            <td th:text="${gun.gunName}"></td>
+            <td th:text="${gun.model}"></td>
+            <td th:text="${gun.registeredBy}"></td>
+            <td th:text="${gun.manufacturedDate}"></td>
+            <td th:text="${gun.manufacturedPlace}"></td>
+            <td th:text="${gun.issueDate}"></td>
+            <td th:text="${gun.returnDate}"></td>
+            <td th:text="${gun.status}"></td>
+        </tr>
+
+        <!-- If list is empty -->
+        <tr th:if="${#lists.isEmpty(recordBookList)}">
+            <td colspan="12" class="center-align">No records found.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Materialize JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script>M.AutoInit();</script>
+</body>
+</html>

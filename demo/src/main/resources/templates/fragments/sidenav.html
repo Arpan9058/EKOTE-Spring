@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidenav">
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <a href="#name">
+                    <span class="black-text name">Hi There,</span>
+                </a>
+                <a href="#email">
+                    <span class="black-text email">Welcome To EKOTE Dashboard</span>
+                </a>
+            </div>
+        </li>
+        <li><a th:href="@{/QRCode}">Bar-Code Generator</a></li>
+        <li><a th:href="@{/inventory_management}">Guns Stock Management</a></li>
+        <li><a th:href="@{/IssueReturn}">Issued And Return</a></li>
+        <li><a th:href="@{/Maintenance}">Maintenance</a></li>
+        <li><a th:href="@{/HelpDashb}">Help & Support</a></li>
+        <li><a th:href="@{/recordBook}">Record Book</a></li>
+        <li><a th:href="@{/AddSpecific}">Add Gun Portal</a></li>
+        <li><a th:href="@{/logout}">Logout</a></li>
+    </ul>
+    <a data-target="slide-out" class="sidenav-trigger">
+        <i class="fa fa-navicon" style="font-size:38px; padding: 10px"></i>
+    </a>
+</div>
+</body>
+</html>
