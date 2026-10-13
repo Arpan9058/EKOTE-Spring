@@ -3,6 +3,8 @@
 
 <head>
     <meta charset="UTF-8" />
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Inventory Management</title>
 
@@ -232,6 +234,12 @@
     $(document).ready(function () {
       $('.sidenav').sidenav();
       $('select').formSelect();
+      $(document).ajaxSend(function (event, xhr, settings) {
+        if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !settings.crossDomain) {
+          xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"),
+              $("meta[name='_csrf']").attr("content"));
+        }
+      });
       loadInventory();
 
       $("#addGunForm").submit(function (event) {
@@ -289,19 +297,16 @@
           tableBody.empty();
           if (data.length > 0) {
             data.forEach(function (gun) {
-              var row = `
-                            <tr>
-                                <td>${gun.id}</td>
-                                <td>${gun.gunName}</td>
-                                <td>${gun.model}</td>
-                                <td>${gun.quantity}</td>
-                                <td>${gun.registeredBy}</td>
-                                <td>
-                                    <button class="btn red btn-small waves-effect waves-light" onclick="deleteGun(${gun.id})">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>`;
+              var row = $("<tr>");
+              [gun.id, gun.gunName, gun.model, gun.quantity, gun.registeredBy].forEach(function (value) {
+                row.append($("<td>").text(value));
+              });
+              var button = $("<button>", {
+                type: "button",
+                class: "btn red btn-small waves-effect waves-light"
+              }).append($("<i>", { class: "fa fa-trash" }));
+              button.on("click", function () { deleteGun(gun.id); });
+              row.append($("<td>").append(button));
               tableBody.append(row);
             });
           } else {

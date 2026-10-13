@@ -10,7 +10,6 @@ public class HomeController {
     public String home() {
         // Return the name of the template file for the home page.
         // Based on your file structure, this would be src/main/resources/templates/index.html
-        System.out.println("Accessed the home page");
 
         return "index";
     }
@@ -51,11 +50,6 @@ public class HomeController {
         return "HelpDashb";
     }
 
-//    @GetMapping("/recordBook")
-//    public String record() {
-//        return "recordBook";
-//    }
-
     @GetMapping("/AddSpecific")
     public String add(){
         return "gunInfoForm";
@@ -74,11 +68,3 @@ public class HomeController {
 
 
 }
-//<li><a th:href="@{/QRCode}">Bar-Code Generator</a></li>
-//        <li><a th:href="@{/inventory_management}">Guns Stock Management</a></li>
-//        <li><a th:href="@{/IssueReturn}">Issued And Return</a></li>
-//        <li><a th:href="@{/Maintenance}">Maintenance</a></li>
-//        <li><a th:href="@{/HelpDashb}">Help & Support</a></li>
-//        <li><a th:href="@{/recordBook}">Record Book</a></li>
-//        <li><a th:href="@{/AddSpecific}">Add Gun Portal</a></li>
-//        <li><a th:href="@{/logout}">Logout</a></li>

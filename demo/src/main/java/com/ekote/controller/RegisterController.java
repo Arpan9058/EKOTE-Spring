@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import java.io.IOException;
 
 @Controller
@@ -20,11 +24,10 @@ public class RegisterController {
 
     @PostMapping("/register")
     public void registerUser(
-            @RequestParam("user_name") String name,
-            @RequestParam("user_mail") String mail,
-            @RequestParam("user_pass") String pass,
-            @RequestParam("user_id") Long id,
-            @RequestParam("user_role") String role,
+            @RequestParam("user_name") @NotBlank String name,
+            @RequestParam("user_mail") @NotBlank @Email String mail,
+            @RequestParam("user_pass") @NotBlank @Size(min = 8, max = 72) String pass,
+            @RequestParam("user_id") @Positive Long id,
             HttpServletResponse response) throws IOException {
 
         User user = new User();
@@ -32,14 +35,14 @@ public class RegisterController {
         user.setName(name);
         user.setPassword(pass); // will be hashed inside service
         user.setMail(mail);
-        user.setRole(role);
+        user.setRole("USER");
 
         boolean success = userService.registerUser(user);
 
         if (success) {
             response.sendRedirect("login?success=registration_successful");
         } else {
-            response.sendRedirect("register?error=duplicate_mail");
+            response.sendRedirect("register?error=duplicate_identity");
         }
     }
 }

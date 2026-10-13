@@ -85,7 +85,7 @@
         <li><a th:href="@{/HelpDashb}">Help & Support</a></li>
         <li><a th:href="@{/recordBook}">Record Book</a></li>
         <li><a th:href="@{/AddSpecific}">Add Gun Portal</a></li>
-        <li><a th:href="@{/logout}">Logout</a></li>
+        <li><form th:action="@{/logout}" method="post"><button type="submit" class="btn-flat">Logout</button></form></li>
     </ul>
 </div>
 

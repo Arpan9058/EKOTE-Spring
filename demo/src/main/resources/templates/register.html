@@ -95,17 +95,10 @@
                     <input type="email" name="user_mail" placeholder="Enter E-mail" required/>
                 </div>
                 <div class="form-field">
-                    <input type="password" name="user_pass" placeholder="Enter Password" required/>
+                    <input type="password" name="user_pass" minlength="8" maxlength="72" placeholder="Enter Password" required/>
                 </div>
                 <div class="form-field">
                     <input type="text" name="user_id" placeholder="Enter ID Card No." required/>
-                </div>
-                <div class="form-field input-field">
-                    <select name="user_role" required>
-                        <option value="" disabled selected>Select Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="user">User</option>
-                    </select>
                 </div>
                 <div class="form-field">
                     <button type="submit" class="btn green">Register</button>
@@ -134,8 +127,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('success') === 'registration_successful') {
             alert('Registration successful! You can now log in.');
-        } else if (urlParams.get('error') === 'duplicate_mail') {
-            alert('Email is already Registered');
+        } else if (urlParams.get('error') === 'duplicate_identity') {
+            alert('Email or user ID is already registered');
         }
     }
 </script>

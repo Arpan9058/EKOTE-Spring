@@ -1,6 +1,10 @@
     package com.ekote.controller;
 
     import com.ekote.dto.GunFormDTO;
+    import jakarta.validation.Valid;
+    import jakarta.validation.constraints.NotBlank;
+    import jakarta.validation.constraints.Min;
+    import jakarta.validation.constraints.Max;
     import com.ekote.service.GunInfoService;
     import org.springframework.beans.factory.annotation.Autowired;
     import org.springframework.stereotype.Controller;
@@ -29,9 +33,9 @@
 
         // Handle the first form submission (generate identifiers)
         @PostMapping
-        public String generateTable(@RequestParam("gunName") String gunName,
-                                    @RequestParam("gunModel") String gunModel,
-                                    @RequestParam("quantity") int quantity,
+        public String generateTable(@RequestParam("gunName") @NotBlank String gunName,
+                                    @RequestParam("gunModel") @NotBlank String gunModel,
+                                    @RequestParam("quantity") @Min(1) @Max(1000) int quantity,
                                     Model model) {
             // Generate the identifiers
             List<String> identifiers = new ArrayList<>();
@@ -51,10 +55,7 @@
 
 
         @PostMapping("/addSpecific")
-        public String addSpecificGuns(GunFormDTO formDTO, Model model) {
-            // The identifiers are correctly passed here. The original code is correct.
-            // The error was an environment or user-action issue.
-            // The following code is logically correct.
+        public String addSpecificGuns(@Valid GunFormDTO formDTO, Model model) {
             String gunName = formDTO.getGunName();
             String gunModel = formDTO.getGunModel();
             Integer quantity = formDTO.getQuantity();

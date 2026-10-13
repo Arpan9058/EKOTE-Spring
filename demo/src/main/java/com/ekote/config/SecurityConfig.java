@@ -25,8 +25,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService);
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -35,13 +34,13 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/gunDetails/**", "/login", "/register", "/login",  "/img/**", "/css/**", "/js/**").permitAll()
-                        .requestMatchers("/dashboard").hasRole("ADMIN")
+                        .requestMatchers("/", "/login", "/register", "/actuator/health", "/img/**", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/dashboard", "/guns/**", "/gunForm/**", "/issue/**", "/return", "/updateMaintenance").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")        // your login.html
-                        .defaultSuccessUrl("/dashboard", true)
+                        .defaultSuccessUrl("/", false)
                         .failureUrl("/login?error=invalid_credentials")
                         .permitAll()
                 )
@@ -49,8 +48,7 @@ public class SecurityConfig {
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
-                )
-                .csrf(csrf -> csrf.disable());
+                );
 
         return http.build();
 
