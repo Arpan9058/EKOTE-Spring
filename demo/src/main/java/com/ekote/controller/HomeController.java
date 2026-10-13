@@ -29,11 +29,6 @@ public class HomeController {
         return "register";
     }
 
-    @GetMapping("/error")
-    public String errorhandle() {
-        return "error";
-    }
-
     @GetMapping("/IssueReturn")
     public String issueReturn() {
         return "issueReturn";

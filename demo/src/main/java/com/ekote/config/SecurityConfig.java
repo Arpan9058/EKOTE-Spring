@@ -1,6 +1,7 @@
 package com.ekote.config;
 
 import com.ekote.service.CustomUserDetailsService;
+import jakarta.servlet.DispatcherType;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers("/", "/login", "/register", "/actuator/health", "/img/**", "/css/**", "/js/**").permitAll()
                         .requestMatchers("/dashboard", "/guns/**", "/gunForm/**", "/issue/**", "/return", "/updateMaintenance").hasRole("ADMIN")
                         .anyRequest().authenticated()
