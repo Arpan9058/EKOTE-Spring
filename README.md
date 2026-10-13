@@ -103,44 +103,105 @@ EKOTE-Spring/
     └── mvnw.cmd
 ```
 
-## Requirements
+## Development and tests
 
-To build or run the application locally:
+This is a Spring Boot backend web application, not an infrastructure-as-code project.
+Use a **Java 21 JDK** (including `javac`), not just a Java runtime. Maven 3.9.11
+is pinned by the committed Maven Wrapper; a separate Maven install is unnecessary.
 
-- Java 21
-- Maven or the included Maven Wrapper
-- MySQL
-
-## Build
-
-Move into the application directory:
+From a fresh clone, run all unit and integration tests and build the executable jar:
 
 ```bash
 cd demo
+./mvnw --batch-mode --no-transfer-progress clean verify
 ```
 
-Using Maven Wrapper:
+Tests use the `test` profile and an in-memory H2 database in MySQL compatibility
+mode. They do not need MySQL, Docker, Firebase credentials, or datasource environment
+variables. Coverage includes inventory adjustments, issue rejection and stock updates,
+password hashing and duplicate registration, HTTP validation, authorization, CSRF,
+registration/login, and database-backed inventory requests. A real embedded-Tomcat
+test also verifies HTTP 403 survives servlet error dispatch. H2 tests supplement the
+MySQL container smoke check; they do not prove every MySQL-specific query or concurrent
+inventory operation is correct.
+
+GitHub Actions runs the same command on every push and pull request and uploads
+Surefire reports. Dependabot checks Maven dependencies, Actions, and Docker images
+weekly. Spring Boot's parent BOM pins versions of managed dependencies; direct
+libraries and the Maven Wrapper are pinned in `demo/pom.xml` and
+`demo/.mvn/wrapper/maven-wrapper.properties`. Maven does not use an npm-style lockfile.
+
+## Run with Docker Compose
+
+Install Docker with Compose v2, then run:
 
 ```bash
-./mvnw clean package
+cd demo
+docker compose up --build -d
+docker compose logs -f app
 ```
 
-or with Maven installed:
+Compose starts MySQL 8.4, waits for a successful database query, and starts the app.
+The Java and MySQL base images are pinned by digest and monitored by Dependabot.
+The Docker image build runs the test suite, and the runtime runs as an unprivileged
+user. MySQL data persists in a named volume; the database port is not published.
+The application listens on `127.0.0.1:8080` on the host.
+
+Check readiness with an actual application request:
 
 ```bash
-mvn clean package
+curl --fail http://localhost:8080/actuator/health
+# Expected: {"status":"UP"}; includes database health without public details.
 ```
 
-## Run
+Open the application at `http://localhost:8080`, register a user, and sign in.
+To stop services while retaining data, run `docker compose down`.
+`docker compose down --volumes` deletes the local database.
+
+Optional overrides are documented in `demo/.env.example`: copy it to `.env` to
+change `APP_PORT` or `DB_PASSWORD`. The default database password is deliberately
+for local development only. Use private credentials for any shared deployment;
+`.env` files are ignored by Git and excluded from Docker's build context. Changing
+the password after a database volume has been initialized also requires changing
+that database user's password; changing an environment variable alone does not do it.
+The existing application does not use Firebase despite declaring its SDK dependency.
+
+## Run with your own MySQL
+
+Create a MySQL database and a user with access to it, then supply your own credentials
+through process environment variables (never commit them):
 
 ```bash
+export SPRING_DATASOURCE_URL='jdbc:mysql://localhost:3306/ekote'
+export SPRING_DATASOURCE_USERNAME='ekote'
+# Set SPRING_DATASOURCE_PASSWORD securely in your shell/environment settings.
 cd demo
 ./mvnw spring-boot:run
 ```
 
-## Docker
+The application currently uses Hibernate `ddl-auto=update`. Production deployments
+should use reviewed database migrations and private deployment credentials.
 
-A Dockerfile is included under the `demo` directory for containerized deployment.
+## Authentication and request security
+
+Public registration always creates a `USER`; posting `user_role=ADMIN` cannot grant
+administrator access. Administrators manage inventory, item batches, issue/return,
+and maintenance. Provision an administrator through a trusted database operator:
+after registering that user, update **that user's** `register.role` to `ADMIN` using
+their verified ID. There is no default administrator or committed administrator
+password. Normal login returns to the home page unless an authorized page was requested.
+
+CSRF protection is enabled. Thymeleaf POST forms include tokens automatically;
+inventory AJAX requests send the CSRF header, and logout uses POST. Inventory and
+batch input validation rejects blank names, nonpositive quantities, unsupported
+operations, and incomplete batches with HTTP 400. Batch generation is limited to
+1,000 items per request. API clients must use an authenticated session and its CSRF
+token for mutations. The public health endpoint exposes only aggregate status.
+
+The browser UI uses external CDN assets, so it requires internet access for those
+assets. Offline builds/tests do not exercise browser rendering or every business
+workflow. Concurrent stock updates still require stronger locking/consistency work
+before use in a production inventory system.
 
 ## How the Issue Workflow Works
 
