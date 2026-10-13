@@ -1,0 +1,62 @@
+package com.ekote.service;
+
+import com.ekote.entities.Gun;
+import com.ekote.repositories.GunRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class GunServiceTest {
+    @Mock GunRepository repository;
+    GunService service;
+    @BeforeEach void setUp() { service = new GunService(repository); }
+
+    @Test void createsInventoryWhenAddingNewModel() {
+        when(repository.findByGunNameAndModel("Rifle", "M1")).thenReturn(Optional.empty());
+        assertEquals("Gun added to inventory!", service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "add"));
+        verify(repository).save(argThat(g -> g.getQuantity() == 3 && "Rifle".equals(g.getGunName())
+                && "M1".equals(g.getModel()) && "Officer".equals(g.getRegisteredBy())));
+    }
+    @Test void addsToExistingQuantity() {
+        Gun gun = existing(5);
+        service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "add");
+        assertEquals(8, gun.getQuantity());
+        verify(repository).save(gun);
+    }
+    @Test void subtractsFromExistingQuantity() {
+        Gun gun = existing(5);
+        service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "subtract");
+        assertEquals(2, gun.getQuantity());
+        verify(repository).save(gun);
+    }
+    @Test void refusesInsufficientStockWithoutWriting() {
+        Gun gun = existing(2);
+        assertEquals("Not enough guns in inventory to subtract", service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "subtract"));
+        assertEquals(2, gun.getQuantity());
+        verify(repository, never()).save(any());
+    }
+    @Test void subtractingMissingModelDoesNotCreateInventory() {
+        when(repository.findByGunNameAndModel("Rifle", "M1")).thenReturn(Optional.empty());
+        assertEquals("Not enough guns in inventory to subtract", service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "subtract"));
+        verify(repository, never()).save(any());
+    }
+    @Test void rejectsNegativeQuantityBeforeReadingOrWriting() {
+        assertThrows(IllegalArgumentException.class, () -> service.addOrUpdateGun("Rifle", "M1", -1, "Officer", "subtract"));
+        verifyNoInteractions(repository);
+    }
+    @Test void rejectsUnknownOperation() {
+        assertThrows(IllegalArgumentException.class, () -> service.addOrUpdateGun("Rifle", "M1", 1, "Officer", "unknown"));
+        verifyNoInteractions(repository);
+    }
+    private Gun existing(int quantity) {
+        Gun gun = new Gun(); gun.setQuantity(quantity);
+        when(repository.findByGunNameAndModel("Rifle", "M1")).thenReturn(Optional.of(gun));
+        return gun;
+    }
+}

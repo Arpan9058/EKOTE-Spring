@@ -9,6 +9,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Controller
@@ -47,9 +50,10 @@ public class IssueController {
 
     // ✅ Issue a gun
     @PostMapping
+    @Transactional
     public ResponseEntity<String> issueGun(
-            @RequestParam Long userId,
-            @RequestParam String uniqueIdentifier) {
+            @RequestParam @Positive Long userId,
+            @RequestParam @NotBlank String uniqueIdentifier) {
 
         User user = userRepository.findById(userId).orElse(null);
         if (user == null) {

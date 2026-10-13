@@ -3,6 +3,7 @@ package com.ekote.service;
 import com.ekote.repositories.IssueRepository;
 import com.ekote.repositories.GunRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +17,8 @@ public class ReturnService {
         this.gunRepository = gunRepository;
     }
 
-    public String returnGun(String userId, String uniqueIdentifier) {
+    @Transactional
+    public String returnGun(Long userId, String uniqueIdentifier) {
         return issueRepository.findLatestIssuedGun(userId, uniqueIdentifier)
                 .map(issue -> {
                     // update issue table

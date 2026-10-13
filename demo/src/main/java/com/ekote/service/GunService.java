@@ -1,13 +1,13 @@
 package com.ekote.service;
 
-import com.ekote.dto.GunDetailsDTO;
 import com.ekote.dto.RecordBookDTO;
 import com.ekote.entities.Gun;
-import com.ekote.entities.GunInfo;
 import com.ekote.repositories.GunInfoRepository;
 import com.ekote.repositories.GunRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,6 +15,7 @@ import java.util.Optional;
 
 @Service
 public class GunService {
+    private static final Logger log = LoggerFactory.getLogger(GunService.class);
 
     private final GunRepository gunRepository;
 
@@ -38,6 +39,12 @@ public class GunService {
     }
 
     public String addOrUpdateGun(String gunName, String model, int quantity, String registeredBy, String operation) {
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
+        if (!"add".equalsIgnoreCase(operation) && !"subtract".equalsIgnoreCase(operation)) {
+            throw new IllegalArgumentException("Operation must be add or subtract");
+        }
         Optional<Gun> existing = gunRepository.findByGunNameAndModel(gunName, model);
 
         if (existing.isPresent()) {
@@ -54,6 +61,9 @@ public class GunService {
             gunRepository.save(gun);
             return "Gun quantity updated successfully!";
         } else {
+            if ("subtract".equalsIgnoreCase(operation)) {
+                return "Not enough guns in inventory to subtract";
+            }
             Gun newGun = new Gun();
             newGun.setGunName(gunName);
             newGun.setModel(model);
@@ -68,14 +78,13 @@ public class GunService {
 
     @Transactional
     public Optional<RecordBookDTO> getGunDetailsByUniqueIdentifier(String uniqueIdentifier) {
-        System.out.println("Fetching records for uniqueIdentifier: " + uniqueIdentifier);
+        log.debug("Fetching records for identifier {}", uniqueIdentifier);
         Optional<RecordBookDTO> gunInfo = gunInfoRepository.getGunDetailsByUniqueIdentifier(uniqueIdentifier);
-        System.out.println("GunInfo: " + gunInfo);
         return gunInfo;
     }
     @Transactional
     public List<RecordBookDTO> getPastRecordsByUniqueIdentifier(String uniqueIdentifier) {
-        System.out.println("Fetching past records for uniqueIdentifier: " + uniqueIdentifier);
+        log.debug("Fetching past records for identifier {}", uniqueIdentifier);
         return gunInfoRepository.getPastRecordsByUniqueIdentifier(uniqueIdentifier);  // Implement this method
     }
 }

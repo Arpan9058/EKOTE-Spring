@@ -13,5 +13,5 @@ public interface IssueRepository extends JpaRepository<Issue, Integer> {
     boolean existsByGunIdAndUniqueIdentifierAndStatusAndReturnDateIsNull(int gunId, String uniqueIdentifier, String status);
     @Query("SELECT i FROM Issue i WHERE i.userId = :userId AND i.uniqueIdentifier = :uniqueIdentifier " +
             "AND i.status = 'issued' ORDER BY i.issueDate DESC LIMIT 1")
-    Optional<Issue> findLatestIssuedGun(String userId, String uniqueIdentifier);
+    Optional<Issue> findLatestIssuedGun(Long userId, String uniqueIdentifier);
 }

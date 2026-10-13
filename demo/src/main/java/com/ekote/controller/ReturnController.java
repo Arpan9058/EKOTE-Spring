@@ -2,6 +2,8 @@ package com.ekote.controller;
 
 import com.ekote.service.ReturnService;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,8 +16,8 @@ public class ReturnController {
     }
 
     @PostMapping("/return")
-    public ResponseEntity<String> returnGun(@RequestParam String userId,
-                                            @RequestParam String uniqueIdentifier) {
+    public ResponseEntity<String> returnGun(@RequestParam @Positive Long userId,
+                                            @RequestParam @NotBlank String uniqueIdentifier) {
         String result = returnService.returnGun(userId, uniqueIdentifier);
         if (result.contains("successfully")) {
             return ResponseEntity.ok(result);

@@ -2,7 +2,6 @@ package com.ekote.service;
 
 import com.ekote.entities.User;
 import com.ekote.repositories.UserRepository;
-//import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +18,6 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    // Validate user by email and password
-//    public boolean validateUser(String email, String password) {
-//        Optional<User> userOptional = userRepository.findByMail(email);
-//
-//        // Check if user exists and password matches
-//        return userOptional.isPresent() && BCrypt.checkpw(password, userOptional.get().getPassword());
-//    }
-
     // Find user by ID
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
@@ -36,8 +27,8 @@ public class UserService {
     public boolean registerUser(User user) {
         // Check if email already exists
         Optional<User> existingUser = userRepository.findByMail(user.getMail());
-        if (existingUser.isPresent()) {
-            return false; // Email is already registered
+        if (existingUser.isPresent() || userRepository.existsById(user.getId())) {
+            return false; // Email or user ID is already registered
         }
 
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
