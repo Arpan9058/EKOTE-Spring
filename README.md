@@ -46,7 +46,7 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 
 ### Backend
 - Java 21
-- Spring Boot 3.5.16
+- Spring Boot 4.0.8
 - Spring MVC
 - Spring Data JPA
 - Spring Security
@@ -158,7 +158,7 @@ Check readiness with an actual application request:
 
 ```bash
 curl --fail http://localhost:8080/actuator/health
-# Expected: {"status":"UP"}; includes database health without public details.
+# Expected: status "UP"; includes database health without public component details.
 ```
 
 Open the application at `http://localhost:8080`, register a user, and sign in.
