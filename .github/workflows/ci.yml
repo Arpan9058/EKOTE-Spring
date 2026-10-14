@@ -33,6 +33,12 @@ jobs:
       - name: Compile Java and run unit, repository and HTTP tests
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress clean test
+      - name: Upload resolved dependencies for the security scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: resolved-sbom
+          path: demo/target/classes/META-INF/sbom/application.cdx.json
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -65,6 +71,7 @@ jobs:
         with:
           fail-on-severity: high
   dependency-audit:
+    needs: test
     permissions:
       contents: read
       actions: read
@@ -73,7 +80,8 @@ jobs:
     with:
       scan-args: |-
         --allow-no-lockfiles=false
-        -r
-        ./demo
+        -L
+        ./application.cdx.json
+      download-artifact: resolved-sbom
       upload-sarif: false
       fail-on-vuln: true

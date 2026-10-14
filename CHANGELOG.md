@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Migrate to Spring Boot 4.0.8 / Spring Framework 7 to remediate Spring MVC advisories.
+- Pin patched Jackson 3.1.7 and Tomcat 11.0.27; the parent manages patched Log4j 2.25.5.
+- Adapt modular Spring Boot test annotations and remove the obsolete explicit MySQL dialect.
+- Generate a test-inclusive CycloneDX SBOM and scan resolved components in CI.
+- Verify an OSV scan of 149 Maven components with no known findings on 2026-10-14.
+
 - Move issue validation and stock updates into a transactional service, retaining HTTP behavior.
 - Validate entire item batches before saving; reject duplicate identifiers and invalid dates.
 - Correct inventory record queries and handle JDBC date and numeric values safely.

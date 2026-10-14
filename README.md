@@ -131,9 +131,12 @@ inventory operation is correct.
 GitHub Actions gates tests on lint, then packages the application after tests pass,
 and uploads Surefire reports and the executable jar. `./mvnw validate` checks
 Spotless formatting and Checkstyle; `./mvnw spotless:apply` formats Java locally.
-OSV performs a full Maven dependency scan on pushes and PRs, while dependency review
+The build generates a CycloneDX SBOM, including test dependencies, at
+`demo/target/classes/META-INF/sbom/application.cdx.json`. CI uploads it and OSV scans
+those actual resolved components on pushes and PRs, while dependency review
 rejects new high/critical advisories on PRs. Scanner failures remain failures; no
-vulnerability-free claim follows from a passing application test suite. Dependabot checks Maven dependencies, Actions, and Docker images
+vulnerability-free claim follows from a passing application test suite. See
+[SECURITY.md](SECURITY.md) for the verified audit scope and current results. Dependabot checks Maven dependencies, Actions, and Docker images
 weekly. Spring Boot's parent BOM pins versions of managed dependencies; direct
 libraries and the Maven Wrapper are pinned in `demo/pom.xml` and
 `demo/.mvn/wrapper/maven-wrapper.properties`. Maven does not use an npm-style lockfile.
