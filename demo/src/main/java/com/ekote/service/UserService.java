@@ -2,56 +2,55 @@ package com.ekote.service;
 
 import com.ekote.entities.User;
 import com.ekote.repositories.UserRepository;
+import java.util.Optional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+  public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
+  }
+
+  // Find user by ID
+  public Optional<User> findById(Long id) {
+    return userRepository.findById(id);
+  }
+
+  // Register user
+  public boolean registerUser(User user) {
+    // Check if email already exists
+    Optional<User> existingUser = userRepository.findByMail(user.getMail());
+    if (existingUser.isPresent() || userRepository.existsById(user.getId())) {
+      return false; // Email or user ID is already registered
     }
 
-    // Find user by ID
-    public Optional<User> findById(Long id) {
-        return userRepository.findById(id);
+    if (user.getPassword() == null || user.getPassword().isEmpty()) {
+      throw new IllegalArgumentException("Password cannot be null or empty");
     }
 
-    // Register user
-    public boolean registerUser(User user) {
-        // Check if email already exists
-        Optional<User> existingUser = userRepository.findByMail(user.getMail());
-        if (existingUser.isPresent() || userRepository.existsById(user.getId())) {
-            return false; // Email or user ID is already registered
-        }
+    // Hash the password before saving
+    String encodedPassword = passwordEncoder.encode(user.getPassword());
+    user.setPassword(encodedPassword);
 
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
+    userRepository.save(user);
+    return true; // Registration successful
+  }
 
-        // Hash the password before saving
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+  // Example business logic for issuing a gun
+  public boolean issueGun(String userId, String gunId) {
+    // implement business logic (check gun availability, update status, etc.)
+    return true;
+  }
 
-        userRepository.save(user);
-        return true; // Registration successful
-    }
-
-    // Example business logic for issuing a gun
-    public boolean issueGun(String userId, String gunId) {
-        // implement business logic (check gun availability, update status, etc.)
-        return true;
-    }
-
-    // Example business logic for returning a gun
-    public boolean returnGun(String userId, String gunId) {
-        // implement logic for returning gun
-        return true;
-    }
+  // Example business logic for returning a gun
+  public boolean returnGun(String userId, String gunId) {
+    // implement logic for returning gun
+    return true;
+  }
 }

@@ -10,12 +10,11 @@ import lombok.Data;
 @Table(name = "register")
 public class User {
 
-    @Id
-    private Long id;
-    private String name;
-    private String password;
-    private String mail;
-    private String role;
+  @Id private Long id;
+  private String name;
+  private String password;
+  private String mail;
+  private String role;
 
-    // Getters and Setters
+  // Getters and Setters
 }

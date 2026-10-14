@@ -8,17 +8,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GunDetailsDTO {
-    private String gunIdentifier;
-    private String gunName;
-    private String model;
-    private int quantity;
-    private String registeredBy;
-    private String maintenanceDate;
-    private String nextMaintenanceDate;
-    private String issueDate;
-    private String returnDate;
-    private String status;
-    private String userName;
-    private String userEmail;
-    private String userRole;
+  private String gunIdentifier;
+  private String gunName;
+  private String model;
+  private int quantity;
+  private String registeredBy;
+  private String maintenanceDate;
+  private String nextMaintenanceDate;
+  private String issueDate;
+  private String returnDate;
+  private String status;
+  private String userName;
+  private String userEmail;
+  private String userRole;
 }

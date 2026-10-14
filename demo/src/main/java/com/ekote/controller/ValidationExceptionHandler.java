@@ -10,18 +10,24 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 @RestControllerAdvice
 public class ValidationExceptionHandler {
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<Map<String, Object>> invalidParameters(HandlerMethodValidationException exception) {
-        List<String> errors = exception.getParameterValidationResults().stream()
-                .flatMap(result -> result.getResolvableErrors().stream())
-                .map(error -> error.getDefaultMessage()).toList();
-        return ResponseEntity.badRequest().body(Map.of("status", "error", "errors", errors));
-    }
+  @ExceptionHandler(HandlerMethodValidationException.class)
+  public ResponseEntity<Map<String, Object>> invalidParameters(
+      HandlerMethodValidationException exception) {
+    List<String> errors =
+        exception.getParameterValidationResults().stream()
+            .flatMap(result -> result.getResolvableErrors().stream())
+            .map(error -> error.getDefaultMessage())
+            .toList();
+    return ResponseEntity.badRequest().body(Map.of("status", "error", "errors", errors));
+  }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> invalidForm(MethodArgumentNotValidException exception) {
-        List<String> errors = exception.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage()).toList();
-        return ResponseEntity.badRequest().body(Map.of("status", "error", "errors", errors));
-    }
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, Object>> invalidForm(
+      MethodArgumentNotValidException exception) {
+    List<String> errors =
+        exception.getBindingResult().getFieldErrors().stream()
+            .map(error -> error.getField() + ": " + error.getDefaultMessage())
+            .toList();
+    return ResponseEntity.badRequest().body(Map.of("status", "error", "errors", errors));
+  }
 }
