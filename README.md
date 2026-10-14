@@ -1,5 +1,9 @@
 # EKOTE
 
+**Project type: backend/web application (Java + Spring Boot).** The Maven module is
+`demo/pom.xml`; application tests are under `demo/src/test/java`. See
+[CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
+
 EKOTE is a web-based inventory, issue/return, maintenance, and record management system built with Spring Boot. The application provides a centralized interface for managing inventory records, tracking individual items, recording issue transactions, handling maintenance information, and generating QR codes.
 
 ## Core Features
@@ -42,7 +46,7 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 
 ### Backend
 - Java 21
-- Spring Boot 3.5.5
+- Spring Boot 3.5.16
 - Spring MVC
 - Spring Data JPA
 - Spring Security
@@ -62,7 +66,6 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 ### Additional Libraries
 - ZXing Core
 - ZXing JavaSE
-- Firebase Admin SDK
 - Lombok
 
 ### Deployment
@@ -125,8 +128,12 @@ test also verifies HTTP 403 survives servlet error dispatch. H2 tests supplement
 MySQL container smoke check; they do not prove every MySQL-specific query or concurrent
 inventory operation is correct.
 
-GitHub Actions runs the same command on every push and pull request and uploads
-Surefire reports. Dependabot checks Maven dependencies, Actions, and Docker images
+GitHub Actions gates tests on lint, then packages the application after tests pass,
+and uploads Surefire reports and the executable jar. `./mvnw validate` checks
+Spotless formatting and Checkstyle; `./mvnw spotless:apply` formats Java locally.
+OSV performs a full Maven dependency scan on pushes and PRs, while dependency review
+rejects new high/critical advisories on PRs. Scanner failures remain failures; no
+vulnerability-free claim follows from a passing application test suite. Dependabot checks Maven dependencies, Actions, and Docker images
 weekly. Spring Boot's parent BOM pins versions of managed dependencies; direct
 libraries and the Maven Wrapper are pinned in `demo/pom.xml` and
 `demo/.mvn/wrapper/maven-wrapper.properties`. Maven does not use an npm-style lockfile.
@@ -164,7 +171,7 @@ for local development only. Use private credentials for any shared deployment;
 `.env` files are ignored by Git and excluded from Docker's build context. Changing
 the password after a database volume has been initialized also requires changing
 that database user's password; changing an environment variable alone does not do it.
-The existing application does not use Firebase despite declaring its SDK dependency.
+The unused Firebase SDK dependency has been removed; no Firebase credentials are required.
 
 ## Run with your own MySQL
 

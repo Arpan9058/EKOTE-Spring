@@ -1,11 +1,12 @@
-name: Build and test
+name: Quality and security
 on:
   push:
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
-  verify:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,12 +16,64 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: demo/pom.xml
-      - name: Build and run unit and integration tests
+      - name: Check Java formatting and static rules
         working-directory: demo
-        run: ./mvnw --batch-mode --no-transfer-progress clean verify
-      - name: Upload test reports
+        run: ./mvnw --batch-mode --no-transfer-progress validate
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: demo/pom.xml
+      - name: Compile Java and run unit, repository and HTTP tests
+        working-directory: demo
+        run: ./mvnw --batch-mode --no-transfer-progress clean test
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: demo/target/surefire-reports/
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: demo/pom.xml
+      - name: Package the application after the test job passes
+        working-directory: demo
+        run: ./mvnw --batch-mode --no-transfer-progress package -DskipTests
+      - uses: actions/upload-artifact@v4
+        with:
+          name: application-jar
+          path: demo/target/demo-0.0.1-SNAPSHOT.jar
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+  dependency-audit:
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@0a65f82af05cd58cf587827b0bb0489548c18346 # v2.7.0
+    with:
+      scan-args: |-
+        --allow-no-lockfiles=false
+        -r
+        ./demo
+      upload-sarif: false
+      fail-on-vuln: true

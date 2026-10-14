@@ -1,0 +1,11 @@
+{
+  "project_type": "backend/web",
+  "framework": "Spring Boot",
+  "language": "Java",
+  "build_system": "Maven",
+  "manifest_path": "demo/pom.xml",
+  "source_path": "demo/src/main/java",
+  "test_path": "demo/src/test/java",
+  "test_command": "cd demo && ./mvnw clean verify",
+  "container_config": "demo/docker-compose.yml"
+}
