@@ -1,0 +1,30 @@
+name: Application security analysis
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: demo/pom.xml
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: java-kotlin
+          queries: security-extended
+      - name: Build Java for static analysis
+        working-directory: demo
+        run: ./mvnw --batch-mode --no-transfer-progress clean package -DskipTests
+      - uses: github/codeql-action/analyze@v3

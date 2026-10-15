@@ -132,7 +132,7 @@ jobs:
           name: mysql-concurrency-reports
           path: demo/target/surefire-reports/
   kubernetes:
-    needs: [build, dependency-audit, mysql-concurrency]
+    needs: [build, dependency-audit, mysql-concurrency, release-integration, image-audit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -152,7 +152,8 @@ jobs:
       - name: Build tested container and create isolated cluster
         run: |
           docker build -t ekote-spring:local demo
-          kind create cluster --name ekote-ci --image kindest/node:v1.32.2@sha256:142f543559cc55d64e1ab9341df08e5ced84bd2e893736da8f51320f26f5950b --wait 120s
+          kind create cluster --name ekote-ci --image kindest/node:v1.32.2@sha256:142f543559cc55d64e1ab9341df08e5ced84bd2e893736da8f51320f26f5950b --config deploy/testing/kind.yaml --wait 0s
+          python3 scripts/install-test-network-policy.py
           kind load docker-image ekote-spring:local --name ekote-ci
       - name: Validate and deploy manifests
         run: |
@@ -165,6 +166,8 @@ jobs:
           kubectl -n ekote rollout status deployment/ekote --timeout=300s
       - name: Exercise HTTP and internal health/metrics
         run: python3 scripts/smoke-kubernetes.py --verify-database-recovery
+      - name: Prove network-policy allow and deny flows
+        run: python3 scripts/verify-network-policies.py
       - name: Collect deployment diagnostics
         if: failure()
         run: |
@@ -174,3 +177,85 @@ jobs:
       - name: Remove isolated cluster
         if: always()
         run: kind delete cluster --name ekote-ci
+
+  release-integration:
+    needs: build
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70
+        env:
+          MYSQL_DATABASE: ekote_migration_test
+          MYSQL_USER: ekote
+          MYSQL_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          MYSQL_ROOT_PASSWORD: root-${{ github.run_id }}-${{ github.run_attempt }}
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    env:
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/ekote_migration_test
+      SPRING_DATASOURCE_USERNAME: ekote
+      SPRING_DATASOURCE_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+      EKOTE_MIGRATION_TEST_URL: jdbc:mysql://127.0.0.1:3306/ekote_migration_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: demo/pom.xml
+      - name: Test fresh migrations, explicit legacy adoption and independent session repositories
+        working-directory: demo
+        run: ./mvnw --batch-mode --no-transfer-progress test -Dtest=MySqlMigrationIntegrationTest
+      - uses: actions/download-artifact@v4
+        with:
+          name: application-jar
+          path: .ci-jar
+      - name: Start two app processes against the migrated database
+        run: |
+          java -Xmx384m -jar .ci-jar/demo-0.0.1-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18082 > /tmp/node-a.log 2>&1 &
+          java -Xmx384m -jar .ci-jar/demo-0.0.1-SNAPSHOT.jar --server.address=127.0.0.1 --server.port=18083 > /tmp/node-b.log 2>&1 &
+          python3 - <<'PYTHON'
+          import time, urllib.request
+          for port in (18082, 18083):
+              for attempt in range(90):
+                  try:
+                      with urllib.request.urlopen(f'http://127.0.0.1:{port}/actuator/health', timeout=2) as response:
+                          assert response.status == 200
+                      break
+                  except OSError:
+                      time.sleep(1)
+              else:
+                  raise RuntimeError(f'App on port {port} failed readiness')
+          PYTHON
+      - name: Verify authentication and logout across processes
+        run: python3 scripts/smoke-shared-sessions.py
+      - name: Restore and compare a private backup in a fresh disposable database
+        run: python3 scripts/verify-backup-restore.py --source-container '${{ job.services.mysql.id }}'
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: release-integration-diagnostics
+          path: |
+            /tmp/node-a.log
+            /tmp/node-b.log
+            demo/target/surefire-reports/
+  image-audit:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build verified runtime
+        run: docker build -t ekote-security:ci demo
+      - name: Scan all OS severities without hiding unfixed advisories
+        run: |
+          mkdir -p scan-results
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/scan-results:/output" aquasec/trivy@sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222 image --db-repository ghcr.io/aquasecurity/trivy-db:2 --scanners vuln --pkg-types os --format json --output /output/image.json ekote-security:ci
+          python3 scripts/check-image-audit.py scan-results/image.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: container-os-audit
+          path: scan-results/
