@@ -3,10 +3,13 @@ kind: Deployment
 metadata:
   name: ekote
 spec:
-  # Authentication sessions are local to one JVM. Add shared sessions before scaling replicas.
-  replicas: 1
+  # JDBC-backed sessions allow requests and logout to move between app instances.
+  replicas: 2
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: ekote
@@ -100,3 +103,14 @@ spec:
     - name: http
       port: 8080
       targetPort: http
+
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: ekote
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: ekote
