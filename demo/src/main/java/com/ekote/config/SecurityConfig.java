@@ -48,6 +48,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(
                         "/api/inventory/**",
+                        "/recordBook/**",
+                        "/gunDetails/**",
                         "/actuator/**",
                         "/dashboard",
                         "/guns/**",

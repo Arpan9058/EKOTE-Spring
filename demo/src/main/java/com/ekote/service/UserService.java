@@ -38,7 +38,13 @@ public class UserService {
     String encodedPassword = passwordEncoder.encode(user.getPassword());
     user.setPassword(encodedPassword);
 
-    userRepository.save(user);
-    return true; // Registration successful
+    try {
+      return userRepository.insertRegistration(
+              user.getId(), user.getName(), user.getMail(), encodedPassword)
+          == 1;
+    } catch (org.springframework.dao.DataIntegrityViolationException duplicate) {
+      // INSERT never merges into another identity, even if concurrent preflight checks raced.
+      return false;
+    }
   }
 }

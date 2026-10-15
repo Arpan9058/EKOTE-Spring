@@ -28,10 +28,15 @@ class UserServiceTest {
   void hashesPasswordBeforeSaving() {
     User user = user("long-password");
     when(repository.findByMail(user.getMail())).thenReturn(Optional.empty());
+    when(repository.insertRegistration(
+            eq(user.getId()), eq(user.getName()), eq(user.getMail()), anyString()))
+        .thenReturn(1);
     assertTrue(service.registerUser(user));
     assertNotEquals("long-password", user.getPassword());
     assertTrue(encoder.matches("long-password", user.getPassword()));
-    verify(repository).save(user);
+    verify(repository)
+        .insertRegistration(
+            eq(user.getId()), eq(user.getName()), eq(user.getMail()), eq(user.getPassword()));
   }
 
   @Test
@@ -59,6 +64,16 @@ class UserServiceTest {
   @Test
   void rejectsNullPasswordWithoutWriting() {
     rejectsPassword(null);
+  }
+
+  @Test
+  void concurrentDuplicateDoesNotMergeOrOverwriteIdentity() {
+    User user = user("long-password");
+    when(repository.insertRegistration(anyLong(), any(), anyString(), anyString()))
+        .thenThrow(
+            new org.springframework.dao.DataIntegrityViolationException("duplicate identity"));
+    assertFalse(service.registerUser(user));
+    verify(repository, never()).save(any());
   }
 
   private void rejectsPassword(String password) {
