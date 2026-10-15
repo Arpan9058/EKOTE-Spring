@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: ekote
+resources:
+  - namespace.yml
+  - app.yml
+  - mysql.yml
+  - network-policies.yml

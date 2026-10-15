@@ -32,12 +32,18 @@ jobs:
           cache-dependency-path: demo/pom.xml
       - name: Compile Java and run unit, repository and HTTP tests
         working-directory: demo
-        run: ./mvnw --batch-mode --no-transfer-progress clean test
+        run: ./mvnw --batch-mode --no-transfer-progress clean verify
       - name: Upload resolved dependencies for the security scan
         uses: actions/upload-artifact@v4
         with:
           name: resolved-sbom
           path: demo/target/classes/META-INF/sbom/application.cdx.json
+          if-no-files-found: error
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: demo/target/site/jacoco/
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
@@ -85,3 +91,86 @@ jobs:
       download-artifact: resolved-sbom
       upload-sarif: false
       fail-on-vuln: true
+
+  mysql-concurrency:
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4@sha256:24989179f58856db763f418010c1169fecc944e3ec1ea7e921572d83eb070f70
+        env:
+          MYSQL_DATABASE: ekote_concurrency
+          MYSQL_USER: ekote
+          MYSQL_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          MYSQL_ROOT_PASSWORD: root-${{ github.run_id }}-${{ github.run_attempt }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+          cache-dependency-path: demo/pom.xml
+      - name: Verify transactions under MySQL repeatable-read isolation
+        working-directory: demo
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/ekote_concurrency
+          SPRING_DATASOURCE_USERNAME: ekote
+          SPRING_DATASOURCE_PASSWORD: ci-${{ github.run_id }}-${{ github.run_attempt }}
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+          SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+        run: ./mvnw --batch-mode --no-transfer-progress test -Dtest=StockConcurrencyIntegrationTest
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mysql-concurrency-reports
+          path: demo/target/surefire-reports/
+  kubernetes:
+    needs: [build, dependency-audit, mysql-concurrency]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install checksum-verified kind and kubectl
+        run: |
+          curl -fsSLo kind https://github.com/kubernetes-sigs/kind/releases/download/v0.27.0/kind-linux-amd64
+          curl -fsSLo kind.sha256sum https://github.com/kubernetes-sigs/kind/releases/download/v0.27.0/kind-linux-amd64.sha256sum
+          mv kind kind-linux-amd64
+          sha256sum --check kind.sha256sum
+          chmod +x kind-linux-amd64
+          sudo mv kind-linux-amd64 /usr/local/bin/kind
+          curl -fsSLo kubectl https://dl.k8s.io/release/v1.32.2/bin/linux/amd64/kubectl
+          curl -fsSLo kubectl.sha256 https://dl.k8s.io/release/v1.32.2/bin/linux/amd64/kubectl.sha256
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/kubectl
+      - name: Build tested container and create isolated cluster
+        run: |
+          docker build -t ekote-spring:local demo
+          kind create cluster --name ekote-ci --image kindest/node:v1.32.2@sha256:142f543559cc55d64e1ab9341df08e5ced84bd2e893736da8f51320f26f5950b --wait 120s
+          kind load docker-image ekote-spring:local --name ekote-ci
+      - name: Validate and deploy manifests
+        run: |
+          python3 scripts/create-kubernetes-secret.py
+          kubectl apply --dry-run=server -k deploy/kubernetes -o json > /tmp/manifests.json
+          python3 scripts/check-kubernetes.py < /tmp/manifests.json
+          python3 scripts/test-kubernetes-policy.py < /tmp/manifests.json
+          kubectl apply -k deploy/kubernetes
+          kubectl -n ekote rollout status statefulset/mysql --timeout=300s
+          kubectl -n ekote rollout status deployment/ekote --timeout=300s
+      - name: Exercise HTTP and internal health/metrics
+        run: python3 scripts/smoke-kubernetes.py --verify-database-recovery
+      - name: Collect deployment diagnostics
+        if: failure()
+        run: |
+          kubectl -n ekote get pods,pvc
+          kubectl -n ekote get events --sort-by=.lastTimestamp
+          kubectl -n ekote logs deployment/ekote --tail=100 || true
+      - name: Remove isolated cluster
+        if: always()
+        run: kind delete cluster --name ekote-ci
