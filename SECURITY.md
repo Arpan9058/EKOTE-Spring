@@ -1,9 +1,9 @@
 # Security verification
 
-## Verified dependency audit — 2026-10-14
+## Verified dependency audit — 2026-10-15
 
 OSV-Scanner v2.7.0 scanned a freshly generated CycloneDX 1.6 SBOM covering
-**149 resolved Maven components**, including compile/runtime and test dependencies.
+**156 resolved Maven components**, including compile/runtime and test dependencies.
 The scanner completed with **exit code 0 and zero known vulnerability findings**.
 TLS verification remained enabled. No advisory suppressions or severity exclusions
 were used.
@@ -43,8 +43,16 @@ application is bug-free or that future advisories cannot affect it. It does not
 scan operating-system packages in container base images, Maven plugin internals,
 or application logic for unknown vulnerabilities. The test suite separately
 checks authorization, CSRF, registration identity/role protection, request
-validation, and inventory workflows. Concurrent stock-update correctness still
-needs further locking/consistency work before production use.
+validation, inventory workflows and concurrent issue/return transactions. The new
+concurrency regressions pass against H2 and MySQL 8.4 under repeatable-read isolation,
+including oversell, repeated return, overflow and atomic rollback cases. This evidence
+does not establish correctness for every possible production workload.
+
+Management metrics require ADMIN on the application listener. The Kubernetes setup
+uses a separate internal management port; only health and Prometheus are permitted
+there, behind network policies. kind does not enforce those policies by default.
+Never expose that listener publicly. Stock audit records are actor-attributed and
+transactional, but database administrators can modify them. They are not tamper-proof.
 
 Keep credentials out of issues, logs, commits, and shared reports. Coordinate
 sensitive application vulnerability reports privately with the maintainer.

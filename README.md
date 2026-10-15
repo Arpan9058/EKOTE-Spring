@@ -11,7 +11,8 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 ### Inventory Management
 - Manage inventory and stock information
 - Store individual item information using unique identifiers
-- Track available quantities
+- Track available quantities and immutable stock-movement snapshots with actor attribution
+- Serialize issue, return and adjustment transactions with database row locks
 - Prevent items from being issued when inventory is unavailable
 
 ### Issue and Return Management
@@ -69,7 +70,8 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 - Lombok
 
 ### Deployment
-- Docker
+- Docker Compose
+- Kubernetes (Kustomize manifests, isolated kind smoke test, workload policy checks)
 
 ## Application Modules
 
@@ -128,8 +130,8 @@ test also verifies HTTP 403 survives servlet error dispatch. H2 tests supplement
 MySQL container smoke check; they do not prove every MySQL-specific query or concurrent
 inventory operation is correct.
 
-GitHub Actions gates tests on lint, then packages the application after tests pass,
-and uploads Surefire reports and the executable jar. `./mvnw validate` checks
+GitHub Actions gates tests on lint and enforces at least 70% service line coverage with JaCoCo, then packages the application after tests pass,
+and uploads Surefire reports, coverage and the executable jar. A separate MySQL job checks real repeatable-read concurrency; a disposable Kubernetes job validates manifests and exercises the deployed container. `./mvnw validate` checks
 Spotless formatting and Checkstyle; `./mvnw spotless:apply` formats Java locally.
 The build generates a CycloneDX SBOM, including test dependencies, at
 `demo/target/classes/META-INF/sbom/application.cdx.json`. CI uploads it and OSV scans
@@ -210,8 +212,10 @@ token for mutations. The public health endpoint exposes only aggregate status.
 
 The browser UI uses external CDN assets, so it requires internet access for those
 assets. Offline builds/tests do not exercise browser rendering or every business
-workflow. Concurrent stock updates still require stronger locking/consistency work
-before use in a production inventory system.
+workflow. Concurrent issue/return and stock adjustments now lock each model row before mutation.
+The stock change, issue status and audit entry commit or roll back together. Audit records
+are snapshots retained even if an unreferenced model is removed; they are not tamper-proof
+against database administrators. Existing stock history is not fabricated or backfilled.
 
 ## How the Issue Workflow Works
 
@@ -234,3 +238,32 @@ EKOTE was developed as a centralized management application for maintaining inve
 ## Repository Status
 
 The project contains the application source code, Maven configuration, frontend templates and resources, database integration, security configuration, and Docker support.
+
+## Inventory reports and observability
+
+Administrators can use these session-authenticated GET endpoints. Normal users receive
+403. Pages are zero-based and `size` is bounded to 1–100, with stable secondary sorting:
+
+| Endpoint | Purpose | Parameters |
+| --- | --- | --- |
+| `/api/inventory/summary` | Model, available-unit, active-issue and maintenance-due counts | none |
+| `/api/inventory/low-stock` | Stock at or below a threshold | `threshold` (default 5), `page`, `size` |
+| `/api/inventory/maintenance-due` | Scheduled maintenance due today or earlier (UTC) | `page`, `size` |
+| `/api/inventory/movements` | Actor-attributed stock audit history | optional `gunId`, ISO instant `from`/`to`, `page`, `size` |
+| `/api/inventory/movements.csv` | CSV audit export | optional `gunId`, ISO instant `from`/`to` |
+
+CSV export rejects more than 5,000 matching rows; narrow the filters instead of losing
+records silently. Text cells escape quotes/newlines and spreadsheet formula prefixes.
+Maintenance completion schedules the next date from today's UTC date, with intervals
+of 1–120 months. Unscheduled items are excluded from maintenance-due reports.
+
+`/actuator/metrics` and `/actuator/prometheus` require ADMIN on the normal application
+port. The `inventory.movements` and `inventory.units` counters use bounded operation
+tags and increment only after transaction commit, so rollbacks are excluded. Counts
+reset on process restart; persisted audit records provide the durable history.
+`X-Request-ID` is validated/generated and included in responses and log context.
+Database conflicts return a generic 409 without SQL details.
+
+For an isolated cluster, probes, non-root workloads, PVC, policy checks and network
+limitations, see [Kubernetes setup](deploy/kubernetes/README.md). For dependency pins,
+SBOM scope and update commands, see [dependency management](demo/DEPENDENCIES.md).

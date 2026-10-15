@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-15
+
+- Serialize stock mutations and active-issue reads under row locks; commit stock,
+  issue status and actor-attributed audit records atomically. Concurrent issue,
+  return, oversell, overflow and rollback regression tests cover H2 and real MySQL.
+- Add bounded admin inventory summary, low-stock, due-maintenance and audit reports,
+  plus formula-safe CSV export with an explicit 5,000-row maximum.
+- Fix maintenance scheduling to use the performed date and validate intervals.
+- Expose protected metrics and count only committed stock movements; add request IDs.
+- Enforce 70% service line coverage in verify and publish JaCoCo reports in CI.
+- Add restricted Kubernetes workloads, MySQL PVC, separate probes/management listener,
+  network policies, policy regression checks and disposable-cluster HTTP smoke tests.
+- Remove unused AuthService and fake user issue/return methods.
+
 ## Unreleased
 
 - Migrate to Spring Boot 4.0.8 / Spring Framework 7 to remediate Spring MVC advisories.
