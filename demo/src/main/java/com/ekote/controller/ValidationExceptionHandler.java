@@ -10,6 +10,26 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 
 @RestControllerAdvice
 public class ValidationExceptionHandler {
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<Map<String, Object>> invalidRequest(IllegalArgumentException exception) {
+    return ResponseEntity.badRequest()
+        .body(Map.of("status", "error", "errors", List.of(exception.getMessage())));
+  }
+
+  @ExceptionHandler(org.springframework.dao.DataAccessException.class)
+  public ResponseEntity<Map<String, Object>> conflict(
+      org.springframework.dao.DataAccessException exception) {
+    org.slf4j.LoggerFactory.getLogger(ValidationExceptionHandler.class)
+        .warn("Database operation rejected: {}", exception.getClass().getSimpleName());
+    return ResponseEntity.status(409)
+        .body(
+            Map.of(
+                "status",
+                "error",
+                "errors",
+                List.of("Inventory changed or a referenced record exists; refresh and retry")));
+  }
+
   @ExceptionHandler(HandlerMethodValidationException.class)
   public ResponseEntity<Map<String, Object>> invalidParameters(
       HandlerMethodValidationException exception) {

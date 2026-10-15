@@ -13,7 +13,11 @@ public interface GunInfoRepository extends JpaRepository<GunInfo, String> {
 
   boolean existsByUniqueIdentifier(String uniqueIdentifier);
 
-  //
+  long countByNextMaintenanceDateLessThanEqual(java.time.LocalDate date);
+
+  org.springframework.data.domain.Page<GunInfo> findByNextMaintenanceDateLessThanEqual(
+      java.time.LocalDate date, org.springframework.data.domain.Pageable page);
+
   @Query(
       "SELECT new com.ekote.dto.RecordBookDTO("
           + "gi.uniqueIdentifier, g.gunName, g.model, g.registeredBy, "

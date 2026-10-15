@@ -41,11 +41,14 @@ public class SecurityConfig {
                         "/login",
                         "/register",
                         "/actuator/health",
+                        "/actuator/health/**",
                         "/img/**",
                         "/css/**",
                         "/js/**")
                     .permitAll()
                     .requestMatchers(
+                        "/api/inventory/**",
+                        "/actuator/**",
                         "/dashboard",
                         "/guns/**",
                         "/gunForm/**",
