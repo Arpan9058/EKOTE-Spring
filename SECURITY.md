@@ -3,7 +3,7 @@
 ## Verified dependency audit — 2026-10-15
 
 OSV-Scanner v2.7.0 scanned a freshly generated CycloneDX 1.6 SBOM covering
-**156 resolved Maven components**, including compile/runtime and test dependencies.
+**167 resolved Maven components**, including compile/runtime and test dependencies.
 The scanner completed with **exit code 0 and zero known vulnerability findings**.
 TLS verification remained enabled. No advisory suppressions or severity exclusions
 were used.
@@ -11,7 +11,7 @@ were used.
 The initial test-inclusive scan of the previous Spring Boot 3.5.16 build found
 17 advisory IDs across Jackson core/databind, Spring MVC, Tomcat, and Log4j API.
 Remediation uses Spring Boot **4.0.8**, Spring Framework **7.0.9**, Jackson
-**3.1.7**, Tomcat **11.0.27**, and Log4j API **2.25.5**. The complete application
+**3.1.7** (plus Jackson 2 BOM **2.21.7** for Flyway), Tomcat **11.0.27**, and Log4j API **2.25.5**. The complete application
 test suite passed after migration. The Tomcat and Jackson overrides are security
 patches to the parent's managed versions; keep the related modules aligned.
 
@@ -50,9 +50,44 @@ does not establish correctness for every possible production workload.
 
 Management metrics require ADMIN on the application listener. The Kubernetes setup
 uses a separate internal management port; only health and Prometheus are permitted
-there, behind network policies. kind does not enforce those policies by default.
+there, behind network policies. The evaluation cluster now explicitly installs
+Calico; actual allowed/denied flows and a deny→allow→deny control were verified.
 Never expose that listener publicly. Stock audit records are actor-attributed and
 transactional, but database administrators can modify them. They are not tamper-proof.
 
 Keep credentials out of issues, logs, commits, and shared reports. Coordinate
 sensitive application vulnerability reports privately with the maintainer.
+
+## Container OS audit and residual findings — 2026-10-15
+
+Trivy (digest-pinned current scanner) scanned the rebuilt application runtime's 140
+Ubuntu 26.04 OS packages using a current vulnerability database. The initial runtime
+had 88 findings, including two HIGH entries for CVE-2026-92392 in curl/libcurl.
+The runtime now pins reviewed security updates for curl/libcurl 8.18.0-1ubuntu2.8,
+FreeType 2.14.2+dfsg-1ubuntu0.2 and libpng 1.6.57-1ubuntu0.1. The final image scan has
+**0 CRITICAL, 0 HIGH, 46 MEDIUM and 4 LOW** package/advisory entries. All 50 residual
+entries currently lack a vendor FixedVersion; none are hidden by suppressions or
+`ignore-unfixed`. Counts represent package/advisory pairs, not 50 distinct CVE IDs.
+This is not a vulnerability-free image. Re-scan as vendor fixes/advisories change.
+
+CI preserves the complete OS JSON report and rejects any HIGH/CRITICAL advisory,
+including unfixed ones. An unsupported/empty scan fails rather than passing silently.
+Application Maven dependencies remain a separate OSV gate. Build/plugin internals,
+Kubernetes/CNI images and deployment-provider controls are outside these two scan
+scopes. The pinned kind/Calico compatibility lab must not be treated as a maintained
+production Kubernetes distribution.
+
+## Application security regressions
+
+New tests reject USER access to personal record-book/detail endpoints, preserve
+ADMIN-only reporting, and verify concurrent duplicate registration cannot merge or
+overwrite another identity. JDBC session tests use independent repositories and
+actual separate JVMs; logout on one process revokes access on the other. Backup
+verification restores a consistent private archive and compares all data rows; corrupt
+archives and nonempty targets are rejected. Network tests verify real enforcement.
+A CodeQL security-extended workflow is configured, but hosted completion has not been
+observed from this environment. Hosted Actions API access currently returns Forbidden.
+
+Production HTTPS, secure-cookie configuration, login abuse controls, managed HA,
+encrypted offsite backup retention and ingress exposure require validation on the
+actual provider. No external production service has been provisioned or certified.

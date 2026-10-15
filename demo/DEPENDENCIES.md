@@ -6,7 +6,7 @@ versions; Lombok and ZXing have explicit versions. The Maven wrapper pins Maven
 and verifies its distribution checksum. Maven has no native lockfile in this
 project. A generated dependency list or SBOM is an inventory, not a frozen lockfile.
 
-Security overrides currently select Tomcat 11.0.27 and Jackson BOM 3.1.7. Keep them
+Security overrides currently select Tomcat 11.0.27 and Jackson BOM 3.1.7 and Jackson 2 BOM 2.21.7. Keep them
 until a tested Spring Boot parent manages equivalent or newer fixes. Before removing
 an override, run the full build and scan the resulting dependency graph.
 
@@ -30,3 +30,9 @@ coverage and fails `verify` below 70%. Checkstyle and Spotless run in `validate`
 Maven build plugins and container OS packages are outside the application SBOM's
 security coverage. Run an image scanner and review deployment-specific exposure
 before production deployment; application dependency results alone are insufficient.
+
+Flyway and Spring Session JDBC follow the Boot BOM. Flyway introduces Jackson 2 in
+addition to MVC's Jackson 3, so both BOM lines are patched independently. The runtime
+OS scanner runs separately from the Maven SBOM and preserves unfixed advisories.
+The optional Flyway Maven CLI is configured with clean disabled and baseline version
+1; use it only after the reviewed clone/backup/adoption procedure.

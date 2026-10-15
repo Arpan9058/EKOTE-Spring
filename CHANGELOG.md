@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-10-15 — Operational hardening
+
+- Add Flyway schema migrations, explicit legacy adoption tests and shared JDBC
+  sessions; verify authentication/logout across two JVMs.
+- Add private streaming backups, checksum/CRC verification, empty-target safeguards
+  and an exact-row restore drill in a disposable MySQL database.
+- Restrict personal record pages to ADMIN and prevent registration identity merges
+  under concurrency using INSERT and database uniqueness.
+- Patch Jackson 2 transitives and runtime OS packages; keep complete residual image
+  findings visible and gate HIGH/CRITICAL advisories in CI.
+- Verify Calico network-policy enforcement with allow/deny traffic and a controlled
+  deny→allow→deny flow. Add two app replicas, rolling updates and a disruption budget.
+- Configure release integration, image audit and CodeQL workflows.
+
 ## 2026-10-15
 
 - Serialize stock mutations and active-issue reads under row locks; commit stock,

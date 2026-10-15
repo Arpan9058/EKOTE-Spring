@@ -127,8 +127,8 @@ variables. Coverage includes inventory adjustments, issue rejection and stock up
 password hashing and duplicate registration, HTTP validation, authorization, CSRF,
 registration/login, and database-backed inventory requests. A real embedded-Tomcat
 test also verifies HTTP 403 survives servlet error dispatch. H2 tests supplement the
-MySQL container smoke check; they do not prove every MySQL-specific query or concurrent
-inventory operation is correct.
+MySQL container smoke check; they do not prove every MySQL-specific query is correct. A separate real-MySQL suite verifies migrations,
+concurrent stock updates and JDBC session sharing.
 
 GitHub Actions gates tests on lint and enforces at least 70% service line coverage with JaCoCo, then packages the application after tests pass,
 and uploads Surefire reports, coverage and the executable jar. A separate MySQL job checks real repeatable-read concurrency; a disposable Kubernetes job validates manifests and exercises the deployed container. `./mvnw validate` checks
@@ -191,8 +191,10 @@ cd demo
 ./mvnw spring-boot:run
 ```
 
-The application currently uses Hibernate `ddl-auto=update`. Production deployments
-should use reviewed database migrations and private deployment credentials.
+The application uses versioned Flyway migrations and Hibernate schema validation.
+Fresh databases migrate automatically; nonempty legacy databases require explicit,
+reviewed adoption. See [database operations](docs/DATABASE_OPERATIONS.md) before
+upgrading an existing installation.
 
 ## Authentication and request security
 
@@ -267,3 +269,37 @@ Database conflicts return a generic 409 without SQL details.
 For an isolated cluster, probes, non-root workloads, PVC, policy checks and network
 limitations, see [Kubernetes setup](deploy/kubernetes/README.md). For dependency pins,
 SBOM scope and update commands, see [dependency management](demo/DEPENDENCIES.md).
+
+## Release verification and operational safety
+
+Spring Session JDBC shares login state across application instances. Two independent
+JVMs verify cross-instance login, role preservation and logout revocation. Kubernetes
+runs two app replicas with rolling updates and a disruption budget; local MySQL and
+the local single-node cluster remain single points of failure.
+
+Run the real-MySQL migration suite only against its explicitly disposable database:
+
+```sh
+# Supply its database credentials securely through datasource environment variables.
+export EKOTE_MIGRATION_TEST_URL='jdbc:mysql://127.0.0.1:3306/ekote_migration_test'
+cd demo
+./mvnw test -Dtest=MySqlMigrationIntegrationTest
+```
+
+The suite resets **only** the explicitly named `ekote_migration_test` schema. Normal
+H2 test runs skip these three conditional tests; CI executes them in a separate
+MySQL job. CI also verifies multi-process sessions, private backup/restore with exact
+row comparison, image OS advisories, and network-policy enforcement with Calico.
+CodeQL security-extended analysis is configured separately; configuring its workflow
+does not establish a passing hosted analysis run.
+
+Personal record-book and individual detail pages require ADMIN. Registration uses
+INSERT plus database uniqueness, preventing an account from being merged/overwritten
+when concurrent identity checks race. The runtime updates security fixes for curl,
+libcurl, FreeType and libpng beyond the pinned upstream image. Both Jackson 2 (used
+by Flyway) and Jackson 3 (used by MVC) have aligned security overrides.
+
+See [security audit scope and remaining advisories](SECURITY.md) and
+[database/session/recovery operations](docs/DATABASE_OPERATIONS.md). Production
+infrastructure, TLS, encrypted offsite retention and provider credentials must be
+configured and verified on the actual deployment target.
