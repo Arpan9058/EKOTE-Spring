@@ -33,11 +33,16 @@
         <tomcat.version>11.0.27</tomcat.version>
         <!-- Fix Jackson parser/deserializer advisories across its managed modules. -->
         <jackson-bom.version>3.1.7</jackson-bom.version>
+        <!-- Flyway still uses Jackson 2; patch that independently from Boot MVC Jackson 3. -->
+        <jackson-2-bom.version>2.21.7</jackson-2-bom.version>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<maven.compiler.release>21</maven.compiler.release>
 	</properties>
 	<dependencies>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-flyway</artifactId></dependency>
+        <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-mysql</artifactId></dependency>
+        <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-session-jdbc</artifactId></dependency>
         <dependency><groupId>io.micrometer</groupId><artifactId>micrometer-registry-prometheus</artifactId></dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -132,6 +137,21 @@
 
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId><artifactId>flyway-maven-plugin</artifactId><version>${flyway.version}</version>
+                <configuration>
+                    <url>${env.SPRING_DATASOURCE_URL}</url>
+                    <user>${env.SPRING_DATASOURCE_USERNAME}</user>
+                    <password>${env.SPRING_DATASOURCE_PASSWORD}</password>
+                    <locations><location>filesystem:src/main/resources/db/migration/mysql</location></locations>
+                    <baselineVersion>1</baselineVersion><cleanDisabled>true</cleanDisabled>
+                </configuration>
+                <dependencies>
+                    <dependency><groupId>org.flywaydb</groupId><artifactId>flyway-mysql</artifactId><version>${flyway.version}</version></dependency>
+                    <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-core</artifactId><version>${jackson-2-bom.version}</version></dependency>
+                    <dependency><groupId>com.fasterxml.jackson.core</groupId><artifactId>jackson-databind</artifactId><version>${jackson-2-bom.version}</version></dependency>
+                </dependencies>
+            </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.13</version>
                 <executions>
