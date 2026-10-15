@@ -7,15 +7,11 @@ import java.time.LocalDate;
 @Table(name = "guns_info")
 public class GunInfo {
 
-  //    @Id
-  //    @GeneratedValue(strategy = GenerationType.IDENTITY)
-  //    private int id;
-
   @Id
   @Column(name = "unique_identifier", nullable = false, unique = true)
   private String uniqueIdentifier;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "gun_id", nullable = false)
   private Gun gun;
 
@@ -36,8 +32,6 @@ public class GunInfo {
   private Integer maintenanceFreq; // frequency in months
 
   // Getters & Setters
-  //    public int getId() { return id; }
-  //    public void setId(int id) { this.id = id; }
 
   public String getUniqueIdentifier() {
     return uniqueIdentifier;

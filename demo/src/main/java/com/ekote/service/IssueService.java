@@ -10,14 +10,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class IssueService {
   private final UserRepository userRepository;
-  private final GunRepository gunRepository;
+  private final InventoryStockService stock;
   private final GunInfoRepository gunInfoRepository;
   private final IssueRepository issueRepository;
 
   public IssueService(
-      UserRepository users, GunRepository guns, GunInfoRepository info, IssueRepository issues) {
+      UserRepository users,
+      InventoryStockService stock,
+      GunInfoRepository info,
+      IssueRepository issues) {
     userRepository = users;
-    gunRepository = guns;
+    this.stock = stock;
     gunInfoRepository = info;
     issueRepository = issues;
   }
@@ -41,14 +44,13 @@ public class IssueService {
 
     int gunId = gunInfo.getGun().getId();
 
-    Gun gun = gunRepository.findById(gunId).orElse(null);
+    Gun gun = stock.lockGun(gunId).orElse(null);
     if (gun == null) {
       return new IssueResult(false, "❌ Gun model not found in inventory.");
     }
 
     boolean alreadyIssued =
-        issueRepository.existsByGunIdAndUniqueIdentifierAndStatusAndReturnDateIsNull(
-            gun.getId(), uniqueIdentifier, "issued");
+        issueRepository.findActiveForUpdate(gun.getId(), uniqueIdentifier).isPresent();
     if (alreadyIssued) {
       return new IssueResult(false, "⚠️ Gun is already issued.");
     }
@@ -57,8 +59,7 @@ public class IssueService {
       return new IssueResult(false, "⚠️ Gun not available in inventory.");
     }
 
-    gun.setQuantity(gun.getQuantity() - 1);
-    gunRepository.save(gun);
+    stock.apply(gun, -1, MovementType.ISSUE, uniqueIdentifier);
 
     Issue issue = new Issue();
     issue.setUserId(userId);

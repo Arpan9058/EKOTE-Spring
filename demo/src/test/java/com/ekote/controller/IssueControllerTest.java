@@ -1,5 +1,6 @@
 package com.ekote.controller;
 
+import static com.ekote.support.StockFixtures.stock;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,7 +31,7 @@ class IssueControllerTest {
   void setUp() {
     mvc =
         MockMvcBuilders.standaloneSetup(
-                new IssueController(users, new IssueService(users, guns, info, issues)))
+                new IssueController(users, new IssueService(users, stock(guns), info, issues)))
             .build();
   }
 
@@ -43,14 +44,13 @@ class IssueControllerTest {
     item.setUniqueIdentifier("ITEM-1");
     when(users.findById(10L)).thenReturn(Optional.of(new User()));
     when(info.findByUniqueIdentifier("ITEM-1")).thenReturn(Optional.of(item));
-    when(guns.findById(7)).thenReturn(Optional.of(gun));
+    when(guns.findForUpdateById(7)).thenReturn(Optional.of(gun));
   }
 
   @Test
   void refusesAlreadyIssuedItemWithoutChangingStock() throws Exception {
     available(3);
-    when(issues.existsByGunIdAndUniqueIdentifierAndStatusAndReturnDateIsNull(7, "ITEM-1", "issued"))
-        .thenReturn(true);
+    when(issues.findActiveForUpdate(7, "ITEM-1")).thenReturn(Optional.of(new Issue()));
     mvc.perform(post("/issue").param("userId", "10").param("uniqueIdentifier", "ITEM-1"))
         .andExpect(status().isBadRequest())
         .andExpect(content().string(containsString("already issued")));

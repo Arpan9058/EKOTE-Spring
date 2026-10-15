@@ -3,7 +3,12 @@ package com.ekote.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "guns") // make sure it matches your DB table name
+@Table(
+    name = "guns",
+    uniqueConstraints =
+        @UniqueConstraint(
+            name = "uk_gun_name_model",
+            columnNames = {"gun_name", "model"})) // make sure it matches your DB table name
 public class Gun {
 
   @Id

@@ -1,9 +1,11 @@
 package com.ekote.service;
 
+import static com.ekote.support.StockFixtures.stock;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.ekote.entities.Gun;
+import com.ekote.repositories.GunInfoRepository;
 import com.ekote.repositories.GunRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,11 +21,19 @@ class GunServiceTest {
 
   @BeforeEach
   void setUp() {
-    service = new GunService(repository);
+    service = new GunService(repository, mock(GunInfoRepository.class), stock(repository));
   }
 
   @Test
   void createsInventoryWhenAddingNewModel() {
+    doAnswer(
+            invocation -> {
+              Gun gun = invocation.getArgument(0);
+              gun.setId(1);
+              return gun;
+            })
+        .when(repository)
+        .save(any());
     when(repository.findByGunNameAndModel("Rifle", "M1")).thenReturn(Optional.empty());
     assertEquals(
         "Gun added to inventory!", service.addOrUpdateGun("Rifle", "M1", 3, "Officer", "add"));
@@ -90,7 +100,9 @@ class GunServiceTest {
 
   private Gun existing(int quantity) {
     Gun gun = new Gun();
+    gun.setId(1);
     gun.setQuantity(quantity);
+    when(repository.findForUpdateById(1)).thenReturn(Optional.of(gun));
     when(repository.findByGunNameAndModel("Rifle", "M1")).thenReturn(Optional.of(gun));
     return gun;
   }

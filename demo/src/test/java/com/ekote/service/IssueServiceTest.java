@@ -1,5 +1,6 @@
 package com.ekote.service;
 
+import static com.ekote.support.StockFixtures.stock;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +23,7 @@ class IssueServiceTest {
 
   @BeforeEach
   void setup() {
-    service = new IssueService(users, guns, items, issues);
+    service = new IssueService(users, stock(guns), items, issues);
   }
 
   @Test
@@ -43,7 +44,7 @@ class IssueServiceTest {
   @Test
   void missingInventoryDoesNotCreateIssue() {
     item();
-    when(guns.findById(7)).thenReturn(Optional.empty());
+    when(guns.findForUpdateById(7)).thenReturn(Optional.empty());
     assertFalse(service.issueGun(10L, "ITEM").success());
     verifyNoInteractions(issues);
   }
@@ -51,8 +52,7 @@ class IssueServiceTest {
   @Test
   void alreadyIssuedItemDoesNotChangeStock() {
     Gun gun = available(2);
-    when(issues.existsByGunIdAndUniqueIdentifierAndStatusAndReturnDateIsNull(7, "ITEM", "issued"))
-        .thenReturn(true);
+    when(issues.findActiveForUpdate(7, "ITEM")).thenReturn(Optional.of(new Issue()));
     assertFalse(service.issueGun(10L, "ITEM").success());
     assertEquals(2, gun.getQuantity());
     verify(guns, never()).save(any());
@@ -98,7 +98,7 @@ class IssueServiceTest {
   private Gun available(int quantity) {
     Gun gun = item();
     gun.setQuantity(quantity);
-    when(guns.findById(7)).thenReturn(Optional.of(gun));
+    when(guns.findForUpdateById(7)).thenReturn(Optional.of(gun));
     return gun;
   }
 }

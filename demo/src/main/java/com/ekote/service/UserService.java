@@ -41,16 +41,4 @@ public class UserService {
     userRepository.save(user);
     return true; // Registration successful
   }
-
-  // Example business logic for issuing a gun
-  public boolean issueGun(String userId, String gunId) {
-    // implement business logic (check gun availability, update status, etc.)
-    return true;
-  }
-
-  // Example business logic for returning a gun
-  public boolean returnGun(String userId, String gunId) {
-    // implement logic for returning gun
-    return true;
-  }
 }

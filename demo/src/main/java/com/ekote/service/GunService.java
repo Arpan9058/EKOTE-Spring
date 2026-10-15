@@ -2,13 +2,13 @@ package com.ekote.service;
 
 import com.ekote.dto.RecordBookDTO;
 import com.ekote.entities.Gun;
+import com.ekote.entities.MovementType;
 import com.ekote.repositories.GunInfoRepository;
 import com.ekote.repositories.GunRepository;
 import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +18,14 @@ public class GunService {
 
   private final GunRepository gunRepository;
 
-  @Autowired private GunInfoRepository gunInfoRepository;
+  private final GunInfoRepository gunInfoRepository;
+  private final InventoryStockService stock;
 
-  public GunService(GunRepository gunRepository) {
+  public GunService(
+      GunRepository gunRepository, GunInfoRepository info, InventoryStockService stock) {
     this.gunRepository = gunRepository;
+    this.gunInfoRepository = info;
+    this.stock = stock;
   }
 
   public boolean deleteGun(int gunId) {
@@ -36,6 +40,7 @@ public class GunService {
     return gunRepository.findAll();
   }
 
+  @Transactional
   public String addOrUpdateGun(
       String gunName, String model, int quantity, String registeredBy, String operation) {
     if (quantity <= 0) {
@@ -47,18 +52,18 @@ public class GunService {
     Optional<Gun> existing = gunRepository.findByGunNameAndModel(gunName, model);
 
     if (existing.isPresent()) {
-      Gun gun = existing.get();
-      int updatedQuantity =
-          operation.equalsIgnoreCase("subtract")
-              ? gun.getQuantity() - quantity
-              : gun.getQuantity() + quantity;
-
-      if (updatedQuantity < 0) {
+      Gun gun =
+          stock
+              .lockGun(existing.get().getId())
+              .orElseThrow(() -> new IllegalArgumentException("Inventory no longer exists"));
+      int delta = "subtract".equalsIgnoreCase(operation) ? -quantity : quantity;
+      if (delta < 0 && gun.getQuantity() < quantity)
         return "Not enough guns in inventory to subtract";
+      try {
+        stock.apply(gun, delta, delta > 0 ? MovementType.ADD : MovementType.SUBTRACT, null);
+      } catch (ArithmeticException exception) {
+        return "Inventory quantity exceeds the supported maximum";
       }
-
-      gun.setQuantity(updatedQuantity);
-      gunRepository.save(gun);
       return "Gun quantity updated successfully!";
     } else {
       if ("subtract".equalsIgnoreCase(operation)) {
@@ -71,6 +76,7 @@ public class GunService {
       newGun.setRegisteredBy(registeredBy);
 
       gunRepository.save(newGun);
+      stock.recordNew(newGun);
       return "Gun added to inventory!";
     }
   }
