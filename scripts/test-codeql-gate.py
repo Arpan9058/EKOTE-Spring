@@ -40,6 +40,14 @@ class GateTest(unittest.TestCase):
         report['runs'][0]['invocations'] = [{'executionSuccessful': False}]
         with self.assertRaises(ValueError): self.evaluate(report)
 
+    def test_rules_in_codeql_query_pack_extensions_are_checked(self):
+        report = self.report()
+        tool = report['runs'][0]['tool']
+        tool['extensions'] = [{'name': 'codeql/java-queries', 'rules': tool['driver'].pop('rules')}]
+        self.assertEqual(1, self.evaluate(report))
+        report['runs'][0]['results'] = []
+        self.assertEqual(0, self.evaluate(report))
+
     def test_unscored_error_cannot_pass(self):
         report = self.report()
         del report['runs'][0]['tool']['driver']['rules'][0]['properties']['security-severity']

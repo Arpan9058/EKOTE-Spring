@@ -17,7 +17,8 @@ def check(directory):
             raise ValueError(f'{path}: missing supported SARIF runs')
         for run in report['runs']:
             driver = run.get('tool', {}).get('driver', {})
-            rules = {rule['id']: rule for rule in driver.get('rules', [])}
+            components = [driver] + run.get('tool', {}).get('extensions', [])
+            rules = {rule['id']: rule for component in components for rule in component.get('rules', [])}
             if driver.get('name') != 'CodeQL' or not rules or not isinstance(run.get('results'), list):
                 raise ValueError(f'{path}: incomplete CodeQL analysis')
             for invocation in run.get('invocations', []):

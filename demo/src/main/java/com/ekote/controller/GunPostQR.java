@@ -21,7 +21,7 @@ public class GunPostQR {
   @GetMapping("/{uniqueIdentifier}")
   public String getGunInfoByUniqueIdentifier(
       @PathVariable("uniqueIdentifier") String uniqueIdentifier, Model model) {
-    log.debug("Fetching records for identifier {}", uniqueIdentifier);
+    log.debug("Fetching inventory records");
 
     // Fetch the current gun details for the unique identifier
     Optional<RecordBookDTO> gunDetails =

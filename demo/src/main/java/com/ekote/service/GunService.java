@@ -83,7 +83,7 @@ public class GunService {
 
   @Transactional
   public Optional<RecordBookDTO> getGunDetailsByUniqueIdentifier(String uniqueIdentifier) {
-    log.debug("Fetching records for identifier {}", uniqueIdentifier);
+    log.debug("Fetching inventory records");
     Optional<RecordBookDTO> gunInfo =
         gunInfoRepository.getGunDetailsByUniqueIdentifier(uniqueIdentifier);
     return gunInfo;
@@ -91,7 +91,7 @@ public class GunService {
 
   @Transactional
   public List<RecordBookDTO> getPastRecordsByUniqueIdentifier(String uniqueIdentifier) {
-    log.debug("Fetching past records for identifier {}", uniqueIdentifier);
+    log.debug("Fetching inventory record history");
     return gunInfoRepository.getPastRecordsByUniqueIdentifier(
         uniqueIdentifier); // Implement this method
   }
