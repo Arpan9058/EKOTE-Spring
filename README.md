@@ -135,8 +135,8 @@ and uploads Surefire reports, coverage and the executable jar. A separate MySQL 
 Spotless formatting and Checkstyle; `./mvnw spotless:apply` formats Java locally.
 The build generates a CycloneDX SBOM, including test dependencies, at
 `demo/target/classes/META-INF/sbom/application.cdx.json`. CI uploads it and OSV scans
-those actual resolved components on pushes and PRs, while dependency review
-rejects new high/critical advisories on PRs. Scanner failures remain failures; no
+those actual resolved components on every push and PR. The OSV gate fails on
+reported vulnerabilities, including new transitive dependencies. Scanner failures remain failures; no
 vulnerability-free claim follows from a passing application test suite. See
 [SECURITY.md](SECURITY.md) for the verified audit scope and current results. Dependabot checks Maven dependencies, Actions, and Docker images
 weekly. Spring Boot's parent BOM pins versions of managed dependencies; direct
@@ -212,9 +212,9 @@ operations, and incomplete batches with HTTP 400. Batch generation is limited to
 1,000 items per request. API clients must use an authenticated session and its CSRF
 token for mutations. The public health endpoint exposes only aggregate status.
 
-The browser UI uses external CDN assets, so it requires internet access for those
-assets. Offline builds/tests do not exercise browser rendering or every business
-workflow. Concurrent issue/return and stock adjustments now lock each model row before mutation.
+Browser CSS, JavaScript and icon fonts are served locally from integrity-locked
+packages. Chromium checks cover rendering and selected security workflows; they do
+not establish correctness for every browser or business workflow. Concurrent issue/return and stock adjustments now lock each model row before mutation.
 The stock change, issue status and audit entry commit or roll back together. Audit records
 are snapshots retained even if an unreferenced model is removed; they are not tamper-proof
 against database administrators. Existing stock history is not fabricated or backfilled.

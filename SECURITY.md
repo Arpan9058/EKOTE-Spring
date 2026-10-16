@@ -33,12 +33,13 @@ OSV connectivity. The scanner exits nonzero on findings or scan failures.
 CI generates this SBOM during the test job and uploads the `resolved-sbom`
 artifact. The pinned OSV reusable workflow scans that artifact, fails on findings,
 and preserves its results. A missing SBOM fails artifact upload rather than
-silently passing an empty scan. PR dependency review additionally rejects new
-high/critical advisories. Dependabot proposes dependency updates weekly.
+silently passing an empty scan. This full resolved-dependency gate also protects
+pull requests without requiring GitHub dependency graph support. Dependabot proposes
+dependency updates weekly.
 
 ## Scope and limitations
 
-This is a point-in-time software-composition scan, not a guarantee that the
+The Maven audit is a point-in-time software-composition scan, not a guarantee that the
 application is bug-free or that future advisories cannot affect it. It does not
 scan operating-system packages in container base images, Maven plugin internals,
 or application logic for unknown vulnerabilities. The test suite separately
