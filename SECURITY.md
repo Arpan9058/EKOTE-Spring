@@ -91,8 +91,9 @@ CodeQL security-extended analysis now runs with a local SARIF severity gate and
 retains complete reports as artifacts. Code scanning is not enabled in the repository,
 so dashboard upload is disabled while analysis and the failure gate remain active.
 The first hosted report identified three medium log-injection findings; raw
-user-supplied identifiers were removed from those logs. Final hosted validation is
-recorded in the Actions runs rather than inferred from workflow configuration.
+user-supplied identifiers were removed from those logs. The subsequent hosted
+analysis passed with zero findings, verified by downloading and checking its SARIF.
+Runs and artifacts remain the evidence for each revision's result.
 
 Shared database authentication limits cover concurrent login/register attempts
 across app replicas and fail closed during database outages. They use the observed
@@ -103,3 +104,8 @@ sets Secure session cookies; servlet and Alpine HTTP checks verify the flags.
 Production HTTPS termination, trusted proxy configuration, managed HA,
 encrypted offsite backup retention and ingress exposure require validation on the
 actual provider. No external production service has been provisioned or certified.
+
+The repository also lacks the separate GitHub dependency-review feature. The
+unsupported API job was removed; complete resolved-SBOM OSV scanning still runs and
+gates every push/PR, including new, transitive and test dependencies. No vulnerability
+finding is suppressed as a workaround for unavailable GitHub security features.

@@ -337,3 +337,9 @@ is configured. Forwarding headers from arbitrary clients are ignored by default.
 Coordinate limits and trusted headers with your ingress, especially for NAT/shared
 networks. These limits supplement edge/WAF controls; they do not prevent distributed
 attacks or provision provider-level traffic protection. Keep replica clocks synced.
+
+The dependency security gate scans the complete resolved Maven SBOM with OSV on
+every push and pull request, including transitive and test dependencies. GitHub's
+separate dependency-review feature is unavailable for this repository, so CI does
+not depend on that API. The complete SBOM is retained for review; OSV findings
+remain blocking rather than being ignored to work around a platform setting.
