@@ -36,18 +36,18 @@ jobs:
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
       - name: Upload resolved dependencies for the security scan
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: resolved-sbom
           path: demo/target/classes/META-INF/sbom/application.cdx.json
           if-no-files-found: error
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage
           path: demo/target/site/jacoco/
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-reports
@@ -66,7 +66,7 @@ jobs:
       - name: Package the application after the test job passes
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress package -DskipTests
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: application-jar
           path: demo/target/demo-0.0.1-SNAPSHOT.jar
@@ -128,7 +128,7 @@ jobs:
           SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
           SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
         run: ./mvnw --batch-mode --no-transfer-progress test -Dtest=StockConcurrencyIntegrationTest
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: mysql-concurrency-reports
@@ -238,7 +238,7 @@ jobs:
         run: python3 scripts/smoke-auth-throttle.py
       - name: Restore and compare a private backup in a fresh disposable database
         run: python3 scripts/verify-backup-restore.py --source-container '${{ job.services.mysql.id }}'
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: release-integration-diagnostics
@@ -258,7 +258,7 @@ jobs:
           mkdir -p scan-results
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$PWD/scan-results:/output" aquasec/trivy@sha256:2416d1f74045b57274df1a340eee6b510cacd73c66a6ccb8da092b117eb7d222 image --db-repository ghcr.io/aquasecurity/trivy-db:2 --scanners vuln --pkg-types os --format json --output /output/image.json ekote-security:ci
           python3 scripts/check-image-audit.py scan-results/image.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: container-os-audit

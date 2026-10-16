@@ -38,7 +38,7 @@ jobs:
         run: python3 scripts/check-codeql.py codeql-results
       - name: Preserve complete static-analysis reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: codeql-sarif
           path: codeql-results/*.sarif
