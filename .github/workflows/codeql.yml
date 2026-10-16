@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -20,11 +20,26 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: demo/pom.xml
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: java-kotlin
           queries: security-extended
       - name: Build Java for static analysis
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress clean package -DskipTests
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
+        with:
+          output: codeql-results
+          # Code scanning is not enabled in this repository. Keep a real analysis
+          # and local gate rather than failing only while uploading its report.
+          upload: never
+          upload-database: false
+      - name: Gate high-severity application security findings
+        run: python3 scripts/check-codeql.py codeql-results
+      - name: Preserve complete static-analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif
+          path: codeql-results/*.sarif
+          if-no-files-found: error
