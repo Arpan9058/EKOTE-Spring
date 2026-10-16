@@ -1,0 +1,26 @@
+/* Preserve EKOTE's layout while using Materialize's maintained component APIs. */
+nav.navbar .nav-wrapper {
+  background-color: inherit;
+  justify-content: space-between;
+  gap: 1rem;
+}
+nav.navbar a,
+nav.navbar .brand-logo,
+nav.navbar ul:not(.dropdown-content) > li > a {
+  color: white;
+  text-decoration: none;
+}
+nav.navbar .brand-logo {
+  font-size: 2rem;
+}
+nav.navbar ul {
+  margin-left: auto;
+}
+.btn {
+  justify-content: center;
+  color: white;
+}
+.form-field input {
+  width: 100%;
+  box-sizing: border-box;
+}

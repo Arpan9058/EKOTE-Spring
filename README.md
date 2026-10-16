@@ -343,3 +343,29 @@ every push and pull request, including transitive and test dependencies. GitHub'
 separate dependency-review feature is unavailable for this repository, so CI does
 not depend on that API. The complete SBOM is retained for review; OSV findings
 remain blocking rather than being ignored to work around a platform setting.
+
+## Browser dependencies and checks
+
+The UI serves pinned Materialize 2.4.0, jQuery and Font Awesome assets locally,
+with license notices and SHA-256 asset metadata. It no longer downloads the
+vulnerable Materialize 1.0.0 bundle or requires a CDN/Google Fonts to render.
+`frontend/package-lock.json` records npm integrity hashes; Dependabot checks it
+weekly. Vendored libraries are third-party code, not additional original project LOC.
+
+To update browser dependencies with Node 24, run:
+
+```sh
+npm ci --ignore-scripts --prefix frontend
+npm audit --prefix frontend --audit-level=moderate
+npm run sync --prefix frontend
+```
+
+Commit the package files together with regenerated assets. Maven/Docker builds
+consume those checked-in assets and require no Node runtime. CI verifies the asset
+snapshot, audits npm dependencies, and runs headless Chromium against the disposable
+MySQL-backed application. The browser tests cover public forms without external
+requests, real registration/login, safe inventory text and text-only notifications.
+Run `npx playwright install chromium --only-shell` inside `frontend`, then
+`EKOTE_BROWSER_BASE_URL=http://127.0.0.1:18082 npm test --prefix frontend` against a
+fresh local test app. Tests register a disposable account and never accept external
+production URLs.

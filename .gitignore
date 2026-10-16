@@ -1,2 +1,7 @@
 # Python deployment-check cache
 __pycache__/
+
+# Reproducible frontend dependency/cache and browser results
+frontend/node_modules/
+frontend/test-results/
+frontend/playwright-report/

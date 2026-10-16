@@ -200,6 +200,20 @@ jobs:
           java-version: '21'
           cache: maven
           cache-dependency-path: demo/pom.xml
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Audit and verify locked local browser assets
+        run: |
+          npm ci --ignore-scripts --prefix frontend
+          npm audit --prefix frontend --audit-level=moderate
+          npm run sync --prefix frontend
+          git diff --exit-code -- demo/src/main/resources/static/vendor
+      - name: Install headless Chromium
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium --only-shell
       - name: Test fresh migrations, explicit legacy adoption and independent session repositories
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress test -Dtest=MySqlMigrationIntegrationTest
@@ -226,6 +240,9 @@ jobs:
           PYTHON
       - name: Verify authentication and logout across processes
         run: python3 scripts/smoke-shared-sessions.py
+      - name: Verify browser assets, registration and XSS regressions
+        working-directory: frontend
+        run: npm test
       - name: Verify shared login quotas and bypass resistance
         run: python3 scripts/smoke-auth-throttle.py
       - name: Restore and compare a private backup in a fresh disposable database
@@ -238,6 +255,7 @@ jobs:
             /tmp/node-a.log
             /tmp/node-b.log
             demo/target/surefire-reports/
+            frontend/test-results/
   image-audit:
     needs: build
     runs-on: ubuntu-latest

@@ -109,3 +109,18 @@ The repository also lacks the separate GitHub dependency-review feature. The
 unsupported API job was removed; complete resolved-SBOM OSV scanning still runs and
 gates every push/PR, including new, transitive and test dependencies. No vulnerability
 finding is suppressed as a workaround for unavailable GitHub security features.
+
+## Browser asset audit — 2026-10-16
+
+A separate OSV check found four XSS advisories in the former CDN-hosted
+`materialize-css` 1.0.0: GHSA-7752-f4gf-94gc, GHSA-7jvx-f994-rfw2,
+GHSA-98f7-p5rc-jx67 and GHSA-rg3q-jxmp-pvjj. The UI now uses the maintained
+`@materializecss/materialize` 2.4.0 package and its current component APIs.
+All browser assets are served locally from integrity-locked npm packages;
+`npm audit` reports zero findings across production and test dependencies.
+New Chromium regressions verify notification payloads and API-provided inventory
+text cannot become executable markup, public pages need no external asset requests,
+and registration/login still work. CI audits npm at MODERATE or above, checks
+asset regeneration and runs those browser tests. CodeQL now also analyzes first-party
+JavaScript/TypeScript; vendored/minified dependency code is covered by npm auditing.
+These are scoped automated checks, not a complete penetration test.

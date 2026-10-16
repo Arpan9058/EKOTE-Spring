@@ -22,7 +22,8 @@ jobs:
           cache-dependency-path: demo/pom.xml
       - uses: github/codeql-action/init@6f2ac81f5cd81fe351a197ba0b00d91d03cd2aee # v4
         with:
-          languages: java-kotlin
+          languages: java-kotlin,javascript-typescript
+          config-file: .github/codeql/config.yml
           queries: security-extended
       - name: Build Java for static analysis
         working-directory: demo

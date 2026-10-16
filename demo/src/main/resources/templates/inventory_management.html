@@ -10,12 +10,13 @@
 
     <!-- Materialize CSS + FontAwesome -->
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" />
+          href="/vendor/materialize/materialize.min.css" />
+    <link rel="stylesheet" href="/vendor/materialize/materialize.colors.min.css" />
+    <link rel="stylesheet" href="/css/application.css" />
     <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+          href="/vendor/font-awesome/css/font-awesome.min.css" />
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
         body {
           background: linear-gradient(135deg, #e8f5e9, #dcedc8);
@@ -227,13 +228,13 @@
 </div>
 </div>
 <!-- Materialize + jQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="/vendor/jquery/jquery.min.js"></script>
+<script src="/vendor/materialize/materialize.min.js"></script>
 
 <script>
     $(document).ready(function () {
-      $('.sidenav').sidenav();
-      $('select').formSelect();
+      M.Sidenav.init(document.querySelectorAll('.sidenav'));
+      M.FormSelect.init(document.querySelectorAll('select'));
       $(document).ajaxSend(function (event, xhr, settings) {
         if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !settings.crossDomain) {
           xhr.setRequestHeader($("meta[name='_csrf_header']").attr("content"),
@@ -255,16 +256,16 @@
           dataType: "json",
           success: function (response) {
             if (response.status === "success") {
-              M.toast({ html: 'Inventory updated successfully!', classes: 'green' });
+              new M.Toast({ text: 'Inventory updated successfully!', classes: 'green' });
               $("#addGunForm")[0].reset();
-              $('select').formSelect(); // reinitialize select after reset
+              M.FormSelect.init(document.querySelectorAll('select')); // reinitialize select after reset
               loadInventory();
             } else {
-              M.toast({ html: 'Error: ' + response.message, classes: 'red' });
+              new M.Toast({ text: 'Error: ' + response.message, classes: 'red' });
             }
           },
           error: function (xhr, status, error) {
-            M.toast({ html: 'Error updating inventory: ' + error, classes: 'red' });
+            new M.Toast({ text: 'Error updating inventory: ' + error, classes: 'red' });
           }
         });
       });
@@ -277,11 +278,11 @@
           method: "DELETE",
           data: { gunId: gunId },
           success: function () {
-            M.toast({ html: 'Gun deleted successfully!', classes: 'green' });
+            new M.Toast({ text: 'Gun deleted successfully!', classes: 'green' });
             loadInventory();
           },
           error: function () {
-            M.toast({ html: 'Error deleting gun.', classes: 'red' });
+            new M.Toast({ text: 'Error deleting gun.', classes: 'red' });
           }
         });
       }
@@ -314,12 +315,12 @@
           }
         },
         error: function () {
-          M.toast({ html: 'Failed to load inventory.', classes: 'red' });
+          new M.Toast({ text: 'Failed to load inventory.', classes: 'red' });
         }
       });
     }
      $(document).ready(function () {
-        $(".sidenav").sidenav();
+        M.Sidenav.init(document.querySelectorAll('.sidenav'));
     });
 </script>
 </body>

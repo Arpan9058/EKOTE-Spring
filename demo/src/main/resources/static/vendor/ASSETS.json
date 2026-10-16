@@ -1,0 +1,23 @@
+{
+  "packages": {
+    "@materializecss/materialize": "2.4.0",
+    "font-awesome": "4.7.0",
+    "jquery": "3.7.1"
+  },
+  "sha256": {
+    "materialize/materialize.min.js": "94d03d4a5d5392806f2e9b57c0b8441ae616685e31ad084fd2d94327b61372a3",
+    "materialize/materialize.min.css": "8cb7d8fc1898c89ee1a08630c4056eacf07d5c905be653e5c42f4f88bc65c961",
+    "materialize/materialize.colors.min.css": "b14024dda788bdf6e1089426d6687b5b9f0e8210c72c359c19854a4fce69f4ce",
+    "materialize/LICENSE": "e2e758735d1b98a05613200c3e3f80cd31beb4384cd5645d6f774f447bba9c8c",
+    "jquery/jquery.min.js": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
+    "jquery/LICENSE.txt": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d",
+    "font-awesome/css/font-awesome.min.css": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd",
+    "font-awesome/LICENSE-README.md": "610427fe917f2b51ef69b5bfa9a7bfe3fcba59b1ccaf86a500a47e5fa1da322b",
+    "font-awesome/fonts/FontAwesome.otf": "444dd4366615ffc4a16d012b2fa90137065d3ccb410fa6fd5e4ddd7b5e4ffcd5",
+    "font-awesome/fonts/fontawesome-webfont.eot": "7bfcab6db99d5cfbf1705ca0536ddc78585432cc5fa41bbd7ad0f009033b2979",
+    "font-awesome/fonts/fontawesome-webfont.svg": "ad6157926c1622ba4e1d03d478f1541368524bfc46f51e42fe0d945f7ef323e4",
+    "font-awesome/fonts/fontawesome-webfont.ttf": "aa58f33f239a0fb02f5c7a6c45c043d7a9ac9a093335806694ecd6d4edc0d6a8",
+    "font-awesome/fonts/fontawesome-webfont.woff": "ba0c59deb5450f5cb41b3f93609ee2d0d995415877ddfa223e8a8a7533474f07",
+    "font-awesome/fonts/fontawesome-webfont.woff2": "2adefcbc041e7d18fcf2d417879dc5a09997aa64d675b7a3c4b6ce33da13f3fe"
+  }
+}

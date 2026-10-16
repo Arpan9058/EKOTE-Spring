@@ -49,6 +49,7 @@ public class SecurityConfig {
                         "/actuator/health",
                         "/actuator/health/**",
                         "/img/**",
+                        "/vendor/**",
                         "/css/**",
                         "/js/**")
                     .permitAll()

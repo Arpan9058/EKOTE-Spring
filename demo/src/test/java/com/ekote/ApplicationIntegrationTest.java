@@ -32,6 +32,13 @@ class ApplicationIntegrationTest {
   @Autowired GunInfoRepository items;
 
   @Test
+  void maintainedBrowserBundleIsAvailableWithoutAuthentication() throws Exception {
+    mvc.perform(get("/vendor/materialize/materialize.min.js"))
+        .andExpect(status().isOk())
+        .andExpect(content().string(containsString("Materialize v2.4.0")));
+  }
+
+  @Test
   void personalInventoryRecordsRequireAdministrator() throws Exception {
     for (String path : new String[] {"/recordBook", "/gunDetails/SECRET-ITEM"}) {
       mvc.perform(get(path).with(user("member").roles("USER"))).andExpect(status().isForbidden());

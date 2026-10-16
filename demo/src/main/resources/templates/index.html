@@ -7,9 +7,11 @@
 
     <link
             rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css"
+            href="/vendor/materialize/materialize.min.css"
     />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/vendor/materialize/materialize.colors.min.css" />
+    <link rel="stylesheet" href="/css/application.css" />
+    <link rel="stylesheet" href="/vendor/font-awesome/css/font-awesome.min.css" />
 
     <style>
         /* Basic Reset and Font */
@@ -275,7 +277,7 @@
     </style>
 </head>
 <body>
-<nav id="navbar">
+<nav class="navbar" id="navbar">
     <div class="nav-wrapper">
         <a href="#" class="brand-logo">E-KOTE</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -410,16 +412,13 @@
     </p>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="/vendor/jquery/jquery.min.js" crossorigin="anonymous"></script>
+<script src="/vendor/materialize/materialize.min.js"></script>
 
 <script>
     $(document).ready(function () {
-      $("select").formSelect();
+      M.FormSelect.init(document.querySelectorAll('select'));
 
-      // Initialize parallax
-      var elems = document.querySelectorAll('.parallax');
-      M.Parallax.init(elems);
 
       // Add shadow to navbar on scroll
       const navbar = document.getElementById('navbar');

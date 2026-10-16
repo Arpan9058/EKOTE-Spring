@@ -2,6 +2,12 @@
 
 ## 2026-10-16 — Runtime and authentication hardening
 
+- Remove the CDN-hosted Materialize 1.0.0 bundle affected by four XSS advisories;
+  lock and serve maintained browser assets locally with licenses and checksums.
+- Preserve navigation/form styling during the component API migration and add npm
+  auditing, deterministic asset checks and real Chromium security regressions.
+- Extend CodeQL to first-party browser JavaScript as well as Java.
+
 - Replace the Ubuntu runtime with pinned Alpine Java 21 and signed libpng/zlib fixes;
   scan all 73 OS packages without severity or unfixed-advisory suppression.
 - Make QR destinations deployment-specific, encode identifiers, and test PNG decoding.

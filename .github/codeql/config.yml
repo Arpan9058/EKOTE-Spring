@@ -1,0 +1,5 @@
+name: EKOTE application security
+paths-ignore:
+  - '**/node_modules/**'
+  - demo/src/main/resources/static/vendor/**
+  - frontend/test-results/**
