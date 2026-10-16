@@ -6,32 +6,49 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import java.io.ByteArrayOutputStream;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.net.URI;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/qrcode")
 public class QRCodeController {
 
-  @Autowired private final GunInfoRepository gunInfoRepository;
+  private final GunInfoRepository gunInfoRepository;
+  private final String publicBaseUrl;
 
-  public QRCodeController(GunInfoRepository gunDetailsRepository) {
-    this.gunInfoRepository = gunDetailsRepository;
+  public QRCodeController(
+      GunInfoRepository gunInfoRepository,
+      @Value("${ekote.public-base-url:http://localhost:8080}") String publicBaseUrl) {
+    URI uri = URI.create(publicBaseUrl);
+    if (!("https".equals(uri.getScheme()) || "http".equals(uri.getScheme()))
+        || uri.getHost() == null
+        || uri.getUserInfo() != null
+        || uri.getRawQuery() != null
+        || uri.getRawFragment() != null) {
+      throw new IllegalArgumentException(
+          "ekote.public-base-url must be an HTTP(S) URL without credentials, query or fragment");
+    }
+    this.gunInfoRepository = gunInfoRepository;
+    this.publicBaseUrl = publicBaseUrl.replaceAll("/+$", "");
   }
 
   @GetMapping(produces = MediaType.IMAGE_PNG_VALUE)
   public ResponseEntity<byte[]> generateQRCode(@RequestParam String gunId) {
-    // ✅ Validate if gun exists
     boolean exists = gunInfoRepository.existsByUniqueIdentifier(gunId);
     if (!exists) {
       return ResponseEntity.badRequest().body(null);
     }
 
-    // ✅ Generate QR Code content
-    String qrCodeContent = "https://ekote-spring-production.up.railway.app/gunDetails/" + gunId;
-    // You can change URL format based on your frontend or detail page
+    String qrCodeContent =
+        UriComponentsBuilder.fromUriString(publicBaseUrl)
+            .pathSegment("gunDetails", gunId)
+            .build()
+            .encode()
+            .toUriString();
 
     try {
       byte[] qrImage = getQRCodeImage(qrCodeContent, 400, 400);

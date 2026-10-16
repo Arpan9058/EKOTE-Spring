@@ -98,7 +98,10 @@ Spring Session JDBC stores sessions in MySQL with a 30-minute timeout, HttpOnly
 cookies and SameSite=Lax. Login on one instance and logout on another were verified
 using two separate JVMs. Database access is part of the authentication trust boundary;
 restrict it and use TLS for remote production MySQL. Serve the application behind
-HTTPS and configure `server.servlet.session.cookie.secure=true` there.
+HTTPS. Set `SPRING_PROFILES_ACTIVE=production` and a canonical HTTPS
+`EKOTE_PUBLIC_BASE_URL`; that profile enforces Secure session cookies. Real servlet
+and Alpine container checks verify the cookie flags. The TLS edge itself still
+needs deployment-specific verification.
 
 The Kubernetes app now has two replicas, RollingUpdate with zero unavailable pods,
 and a PodDisruptionBudget retaining one replica during voluntary disruption. This

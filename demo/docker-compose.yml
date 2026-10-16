@@ -20,6 +20,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ekote
       SPRING_DATASOURCE_USERNAME: ekote
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-local-development-only}
+      EKOTE_PUBLIC_BASE_URL: ${EKOTE_PUBLIC_BASE_URL:-http://localhost:8080}
       SPRING_JPA_SHOW_SQL: "false"
       SPRING_JPA_PROPERTIES_HIBERNATE_GENERATE_STATISTICS: "false"
     ports:

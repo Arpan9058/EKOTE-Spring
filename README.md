@@ -295,11 +295,29 @@ does not establish a passing hosted analysis run.
 
 Personal record-book and individual detail pages require ADMIN. Registration uses
 INSERT plus database uniqueness, preventing an account from being merged/overwritten
-when concurrent identity checks race. The runtime updates security fixes for curl,
-libcurl, FreeType and libpng beyond the pinned upstream image. Both Jackson 2 (used
+when concurrent identity checks race. The runtime uses digest-pinned Alpine Java 21 with signed libpng/zlib security
+updates; the latest complete OS scan found zero advisories across 73 packages. Both Jackson 2 (used
 by Flyway) and Jackson 3 (used by MVC) have aligned security overrides.
 
 See [security audit scope and remaining advisories](SECURITY.md) and
 [database/session/recovery operations](docs/DATABASE_OPERATIONS.md). Production
 infrastructure, TLS, encrypted offsite retention and provider credentials must be
 configured and verified on the actual deployment target.
+
+## Deployment URL and HTTPS sessions
+
+Set `EKOTE_PUBLIC_BASE_URL` to the canonical address users can reach. Generated QR
+codes use this configured origin and encode the item identifier as a path segment;
+they no longer point every deployment at the original Railway instance. The local
+default is `http://localhost:8080`. With a different Compose `APP_PORT`, set the URL
+to that port explicitly. Kubernetes deployments should supply their own canonical
+URL through an environment override. Client-supplied Host headers are never used
+to choose QR destinations.
+
+For a deployment served through HTTPS, set `SPRING_PROFILES_ACTIVE=production` and
+`EKOTE_PUBLIC_BASE_URL=https://your-real-host`. This profile requires the URL and
+marks session cookies Secure, HttpOnly and SameSite=Lax. Do not enable it for plain
+HTTP development: browsers cannot return Secure cookies over HTTP. The profile
+does not provision certificates or an ingress. Forwarded headers remain disabled;
+only enable proxy header handling after configuring a trusted proxy that strips
+client-supplied forwarding headers.
