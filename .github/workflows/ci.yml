@@ -17,7 +17,9 @@ jobs:
           cache: maven
           cache-dependency-path: demo/pom.xml
       - name: Verify static-analysis gate failure handling
-        run: python3 scripts/test-codeql-gate.py
+        run: |
+          python3 scripts/test-codeql-gate.py
+          python3 scripts/test-network-targets.py
       - name: Check Java formatting and static rules
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress validate
