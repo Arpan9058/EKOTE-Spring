@@ -110,3 +110,12 @@ It is not complete infrastructure HA. Production needs multiple failure domains,
 a supported Kubernetes release, a managed/replicated database, TLS ingress, private
 secrets, backups and monitoring. Serialized sessions should be compatibility-tested
 before rolling major framework upgrades; forced logout may be required.
+
+## Authentication-limit migration
+
+V4 adds `authentication_rate_limits`, shared across replicas. It uses atomic JDBC
+updates rather than per-process counters, and never locks a named user's account.
+The migration adds a table and expiry index without rewriting inventory or existing
+sessions. As with other upgrades, back up the database first and grant the migration
+user the required DDL permissions. Old instances ignore the new table during a
+rolling upgrade; limits apply to requests served by upgraded instances.

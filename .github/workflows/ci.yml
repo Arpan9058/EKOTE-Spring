@@ -234,6 +234,8 @@ jobs:
           PYTHON
       - name: Verify authentication and logout across processes
         run: python3 scripts/smoke-shared-sessions.py
+      - name: Verify shared login quotas and bypass resistance
+        run: python3 scripts/smoke-auth-throttle.py
       - name: Restore and compare a private backup in a fresh disposable database
         run: python3 scripts/verify-backup-restore.py --source-container '${{ job.services.mysql.id }}'
       - uses: actions/upload-artifact@v4

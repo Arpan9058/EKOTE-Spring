@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-10-16 — Runtime and authentication hardening
+
+- Replace the Ubuntu runtime with pinned Alpine Java 21 and signed libpng/zlib fixes;
+  scan all 73 OS packages without severity or unfixed-advisory suppression.
+- Make QR destinations deployment-specific, encode identifiers, and test PNG decoding.
+- Add a production HTTPS-cookie profile with real servlet/container flag checks.
+- Share atomic login/register attempt limits across replicas, with expiry cleanup,
+  fail-closed behavior, a V4 migration and H2/real-MySQL concurrency regressions.
+- Remove three CodeQL log-injection sources, validate CodeQL query-pack SARIF metadata,
+  and retain security reports without requiring the code-scanning dashboard feature.
+- Fix direct-network Docker builds when optional proxy variables are absent.
+
 ## 2026-10-15 — Operational hardening
 
 - Add Flyway schema migrations, explicit legacy adoption tests and shared JDBC

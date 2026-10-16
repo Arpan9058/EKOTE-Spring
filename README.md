@@ -287,7 +287,7 @@ cd demo
 ```
 
 The suite resets **only** the explicitly named `ekote_migration_test` schema. Normal
-H2 test runs skip these three conditional tests; CI executes them in a separate
+H2 test runs skip these four conditional tests; CI executes them in a separate
 MySQL job. CI also verifies multi-process sessions, private backup/restore with exact
 row comparison, image OS advisories, and network-policy enforcement with Calico.
 CodeQL security-extended analysis is configured separately; configuring its workflow
@@ -321,3 +321,19 @@ HTTP development: browsers cannot return Secure cookies over HTTP. The profile
 does not provision certificates or an ingress. Forwarded headers remain disabled;
 only enable proxy header handling after configuring a trusted proxy that strips
 client-supplied forwarding headers.
+
+## Authentication attempt limits
+
+POST login attempts are limited to 20 per minute per observed network address;
+registration is limited to 5 per 10 minutes. Both successful and failed attempts
+count. Counters live in MySQL and apply across replicas, including concurrent
+requests. Excess requests return HTTP 429 with `Retry-After`; database failure
+returns a generic 503 and cannot bypass the limit. CSRF validation runs first.
+The limiter stores SHA-256 network/route keys rather than raw addresses, usernames
+or passwords. Every ten minutes it removes up to 1,000 buckets older than an hour.
+
+Requests behind a proxy share its observed address unless trusted proxy handling
+is configured. Forwarding headers from arbitrary clients are ignored by default.
+Coordinate limits and trusted headers with your ingress, especially for NAT/shared
+networks. These limits supplement edge/WAF controls; they do not prevent distributed
+attacks or provision provider-level traffic protection. Keep replica clocks synced.

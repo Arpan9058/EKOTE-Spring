@@ -47,7 +47,7 @@ class MySqlMigrationIntegrationTest {
 
   @Test
   void migratesEmptySchemaAndRevalidatesWithoutRepeatingChanges() {
-    assertEquals(3, flyway.migrate().migrationsExecuted);
+    assertEquals(4, flyway.migrate().migrationsExecuted);
     flyway.validate();
     assertEquals(0, flyway.migrate().migrationsExecuted);
     JdbcTemplate sql = new JdbcTemplate(datasource);
@@ -97,7 +97,7 @@ class MySqlMigrationIntegrationTest {
             .baselineVersion("1")
             .load();
     adopted.baseline();
-    assertEquals(2, adopted.migrate().migrationsExecuted);
+    assertEquals(3, adopted.migrate().migrationsExecuted);
     assertEquals(
         7, sql.queryForObject("SELECT quantity FROM guns WHERE model='V1'", Integer.class));
   }
@@ -123,5 +123,31 @@ class MySqlMigrationIntegrationTest {
     assertEquals("shared", nodeA.findById(session.getId()).getAttribute("csrf-state"));
     nodeB.deleteById(session.getId());
     assertNull(nodeA.findById(session.getId()));
+  }
+
+  @Test
+  void mysqlEnforcesSharedAuthenticationLimitAcrossConcurrentInstances() throws Exception {
+    flyway.migrate();
+    var sql = new JdbcTemplate(datasource);
+    var clock =
+        java.time.Clock.fixed(
+            java.time.Instant.parse("2026-10-16T00:00:00Z"), java.time.ZoneOffset.UTC);
+    var a = new com.ekote.security.AuthenticationRateLimiter(sql, clock);
+    var b = new com.ekote.security.AuthenticationRateLimiter(sql, clock);
+    var calls = new java.util.ArrayList<java.util.concurrent.Callable<Boolean>>();
+    for (int i = 0; i < 40; i++) {
+      var instance = i % 2 == 0 ? a : b;
+      calls.add(() -> instance.allow("192.0.2.1", "/login"));
+    }
+    try (var executor = java.util.concurrent.Executors.newFixedThreadPool(8)) {
+      int allowed = 0;
+      for (var future : executor.invokeAll(calls)) if (future.get()) allowed++;
+      assertEquals(20, allowed);
+    }
+    assertFalse(b.allow("192.0.2.1", "/login"));
+    var later =
+        new com.ekote.security.AuthenticationRateLimiter(
+            sql, java.time.Clock.offset(clock, java.time.Duration.ofMinutes(1)));
+    assertTrue(later.allow("192.0.2.1", "/login"));
   }
 }

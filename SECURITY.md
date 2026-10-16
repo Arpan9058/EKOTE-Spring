@@ -87,9 +87,19 @@ overwrite another identity. JDBC session tests use independent repositories and
 actual separate JVMs; logout on one process revokes access on the other. Backup
 verification restores a consistent private archive and compares all data rows; corrupt
 archives and nonempty targets are rejected. Network tests verify real enforcement.
-A CodeQL security-extended workflow is configured, but hosted completion has not been
-observed from this environment. Hosted Actions API access currently returns Forbidden.
+CodeQL security-extended analysis now runs with a local SARIF severity gate and
+retains complete reports as artifacts. Code scanning is not enabled in the repository,
+so dashboard upload is disabled while analysis and the failure gate remain active.
+The first hosted report identified three medium log-injection findings; raw
+user-supplied identifiers were removed from those logs. Final hosted validation is
+recorded in the Actions runs rather than inferred from workflow configuration.
 
-Production HTTPS, secure-cookie configuration, login abuse controls, managed HA,
+Shared database authentication limits cover concurrent login/register attempts
+across app replicas and fail closed during database outages. They use the observed
+network address, with no implicit trust in forwarding headers. Basic limits do not
+replace provider ingress/WAF controls for distributed traffic. A production profile
+sets Secure session cookies; servlet and Alpine HTTP checks verify the flags.
+
+Production HTTPS termination, trusted proxy configuration, managed HA,
 encrypted offsite backup retention and ingress exposure require validation on the
 actual provider. No external production service has been provisioned or certified.
