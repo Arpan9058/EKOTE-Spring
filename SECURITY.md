@@ -58,17 +58,19 @@ transactional, but database administrators can modify them. They are not tamper-
 Keep credentials out of issues, logs, commits, and shared reports. Coordinate
 sensitive application vulnerability reports privately with the maintainer.
 
-## Container OS audit and residual findings — 2026-10-15
+## Container OS audit — 2026-10-16
 
-Trivy (digest-pinned current scanner) scanned the rebuilt application runtime's 140
-Ubuntu 26.04 OS packages using a current vulnerability database. The initial runtime
-had 88 findings, including two HIGH entries for CVE-2026-92392 in curl/libcurl.
-The runtime now pins reviewed security updates for curl/libcurl 8.18.0-1ubuntu2.8,
-FreeType 2.14.2+dfsg-1ubuntu0.2 and libpng 1.6.57-1ubuntu0.1. The final image scan has
-**0 CRITICAL, 0 HIGH, 46 MEDIUM and 4 LOW** package/advisory entries. All 50 residual
-entries currently lack a vendor FixedVersion; none are hidden by suppressions or
-`ignore-unfixed`. Counts represent package/advisory pairs, not 50 distinct CVE IDs.
-This is not a vulnerability-free image. Re-scan as vendor fixes/advisories change.
+The application runtime now uses digest-pinned Temurin Java 21 on Alpine 3.24.2,
+with signed vendor updates for libpng 1.6.59-r0 and zlib 1.3.2-r1. A fresh Trivy
+scan of the completed image detected **73 OS packages and 0 advisories at all
+severities**, with unfixed findings included. The previous patched Ubuntu runtime
+had 50 residual MEDIUM/LOW package/advisory entries; the unpatched Alpine base had
+two MEDIUM entries, both resolved by these updates.
+
+This is a dated result for OS packages, not a guarantee of zero vulnerabilities.
+The final container ran as UID 10001 with a read-only root filesystem, dropped
+capabilities and temporary storage. Real MySQL-backed login/logout across two
+containers passed. Re-scan as vendor fixes and advisories change.
 
 CI preserves the complete OS JSON report and rejects any HIGH/CRITICAL advisory,
 including unfixed ones. An unsupported/empty scan fails rather than passing silently.
