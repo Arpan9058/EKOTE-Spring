@@ -266,6 +266,16 @@ reset on process restart; persisted audit records provide the durable history.
 `X-Request-ID` is validated/generated and included in responses and log context.
 Database conflicts return a generic 409 without SQL details.
 
+The `production` profile writes one Logstash-compatible JSON record per console
+log event using Spring Boot's built-in structured Logback encoder. Records include
+timestamp, level, logger, message and the current request's `requestId` MDC field.
+Quotes and newlines in messages are JSON-escaped. Request context is removed after
+the request finishes; a forked-JVM regression test verifies the actual production
+logging configuration and guards against context leaking into later events.
+Local development keeps readable text logs. Forward production stdout to your
+hosting provider's log collector; external error tracking and retention require
+deployment-specific configuration. Never log passwords, session cookies or tokens.
+
 For an isolated cluster, probes, non-root workloads, PVC, policy checks and network
 limitations, see [Kubernetes setup](deploy/kubernetes/README.md). For dependency pins,
 SBOM scope and update commands, see [dependency management](demo/DEPENDENCIES.md).

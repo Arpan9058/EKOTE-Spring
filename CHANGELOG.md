@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-10-20 — Runtime logging and dependency drift checks
+
+- Enable built-in structured JSON console logging in the production profile.
+- Verify production log encoding, request correlation and MDC cleanup in a separate JVM.
+
 ## 2026-10-16 — Runtime and authentication hardening
 
 - Remove the CDN-hosted Materialize 1.0.0 bundle affected by four XSS advisories;
