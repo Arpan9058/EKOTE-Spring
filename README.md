@@ -47,7 +47,7 @@ EKOTE is a web-based inventory, issue/return, maintenance, and record management
 
 ### Backend
 - Java 21
-- Spring Boot 4.0.8
+- Spring Boot 4.1.1
 - Spring MVC
 - Spring Data JPA
 - Spring Security
@@ -111,7 +111,7 @@ EKOTE-Spring/
 ## Development and tests
 
 This is a Spring Boot backend web application, not an infrastructure-as-code project.
-Use a **Java 21 JDK** (including `javac`), not just a Java runtime. Maven 3.9.11
+Use a **Java 21 JDK** (including `javac`), not just a Java runtime. Maven 3.10.0
 is pinned by the committed Maven Wrapper; a separate Maven install is unnecessary.
 
 From a fresh clone, run all unit and integration tests and build the executable jar:
@@ -331,7 +331,12 @@ For a deployment served through HTTPS, set `SPRING_PROFILES_ACTIVE=production` a
 `EKOTE_PUBLIC_BASE_URL=https://your-real-host`. This profile requires the URL and
 marks session cookies Secure, HttpOnly and SameSite=Lax. Do not enable it for plain
 HTTP development: browsers cannot return Secure cookies over HTTP. The profile
-does not provision certificates or an ingress. Forwarded headers remain disabled;
+rejects HTTP public URLs, embedded URL credentials/query/fragment, invalid ports
+and attempts to disable Secure or HttpOnly cookies at startup. A real HTTPS servlet
+test verifies the server certificate and hostname against a private test trust store
+before checking the session cookie flags. The profile does not provision public
+certificates or an ingress. See [production deployment inputs](docs/PRODUCTION_DEPLOYMENT.md).
+Forwarded headers remain disabled;
 only enable proxy header handling after configuring a trusted proxy that strips
 client-supplied forwarding headers.
 

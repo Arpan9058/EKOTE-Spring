@@ -2,6 +2,8 @@
 
 ## 2026-10-20 — Runtime logging and dependency drift checks
 
+- Reject unsafe production public URLs and weakened session-cookie flags at startup;
+  verify session cookies over real HTTPS with certificate and hostname validation.
 - Integrate tested Spring Boot 4.1.1, Spotless 3.10.4, Maven 3.10.0 and Wrapper
   3.3.4 updates; pin the verified Maven archive checksum and refresh the resolved
   dependency inventory. Keep Java 21 as the supported toolchain/runtime line.

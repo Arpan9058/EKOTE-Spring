@@ -1,5 +1,20 @@
 # Security verification
 
+## Verification update — 2026-10-20
+
+The Spring Boot 4.1.1 build's resolved CycloneDX inventory contains 164 components,
+including test dependencies. The pinned OSV scanner completed successfully with
+zero findings against that inventory; npm audit also completed with zero findings
+after the jQuery 4.0.0 update. Dependency changes are reviewed in the committed
+snapshot and remain subject to the hosted audit gates.
+
+Production startup now rejects non-HTTPS/unsafe public URLs and disabled Secure or
+HttpOnly session-cookie settings. The HTTPS servlet regression generates a private
+localhost certificate, trusts only that test certificate, verifies hostname/trust
+and checks the real session cookie. Public certificate issuance, deployed proxy
+trust, managed database HA and offsite backup retention still require a selected
+hosting target and are documented in `docs/PRODUCTION_DEPLOYMENT.md`.
+
 ## Verified dependency audit — 2026-10-15
 
 OSV-Scanner v2.7.0 scanned a freshly generated CycloneDX 1.6 SBOM covering
