@@ -20,6 +20,7 @@ jobs:
         run: |
           python3 scripts/test-codeql-gate.py
           python3 scripts/test-network-targets.py
+          python3 scripts/test-dependency-snapshot.py
       - name: Check Java formatting and static rules
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress validate
@@ -37,6 +38,8 @@ jobs:
       - name: Compile Java and run unit, repository and HTTP tests
         working-directory: demo
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
+      - name: Reject unreviewed resolved Maven dependency drift
+        run: python3 scripts/check-dependency-snapshot.py demo/target/classes/META-INF/sbom/application.cdx.json demo/dependency-snapshot.json
       - name: Upload resolved dependencies for the security scan
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:

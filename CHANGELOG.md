@@ -4,6 +4,8 @@
 
 - Enable built-in structured JSON console logging in the production profile.
 - Verify production log encoding, request correlation and MDC cleanup in a separate JVM.
+- Record the resolved Maven dependency inventory and reject unreviewed drift in CI;
+  keep the full OSV scan and reject missing, malformed or empty inventories.
 
 ## 2026-10-16 — Runtime and authentication hardening
 

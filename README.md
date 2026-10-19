@@ -142,6 +142,9 @@ vulnerability-free claim follows from a passing application test suite. See
 weekly. Spring Boot's parent BOM pins versions of managed dependencies; direct
 libraries and the Maven Wrapper are pinned in `demo/pom.xml` and
 `demo/.mvn/wrapper/maven-wrapper.properties`. Maven does not use an npm-style lockfile.
+CI also compares the complete resolved Maven dependency inventory against
+`demo/dependency-snapshot.json` and rejects unreviewed version, addition or removal
+changes. See [dependency management](demo/DEPENDENCIES.md) for the update procedure.
 
 ## Run with Docker Compose
 
