@@ -113,6 +113,8 @@ EKOTE-Spring/
 This is a Spring Boot backend web application, not an infrastructure-as-code project.
 Use a **Java 21 JDK** (including `javac`), not just a Java runtime. Maven 3.10.0
 is pinned by the committed Maven Wrapper; a separate Maven install is unnecessary.
+Unix environments also need `unzip`: the wrapper verifies the pinned Maven ZIP
+archive. The Docker build installs this extractor in its build stage only.
 
 From a fresh clone, run all unit and integration tests and build the executable jar:
 

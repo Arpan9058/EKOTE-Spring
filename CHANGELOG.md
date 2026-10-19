@@ -2,6 +2,8 @@
 
 ## 2026-10-20 — Runtime logging and dependency drift checks
 
+- Install the ZIP extractor in the Docker build stage so Maven's pinned ZIP
+  checksum remains valid; preserve TLS and package-signature verification.
 - Reject unsafe production public URLs and weakened session-cookie flags at startup;
   verify session cookies over real HTTPS with certificate and hostname validation.
 - Integrate tested Spring Boot 4.1.1, Spotless 3.10.4, Maven 3.10.0 and Wrapper

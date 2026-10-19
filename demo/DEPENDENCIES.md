@@ -62,3 +62,6 @@ The Java toolchain and runtime stay on Java 21. Dependabot major Temurin runtime
 bumps are deferred until a deliberate toolchain/runtime migration; security updates
 within Java 21 remain enabled. The wrapper is 3.3.4 and Maven 3.10.0's archive has
 an explicit SHA-256 pin, verified against the official archive's SHA-512 checksum.
+Unix builds require `unzip` so the wrapper downloads that exact ZIP artifact rather
+than falling back to a tar.gz archive. The Docker build installs the extractor;
+the final runtime image does not include the build-stage package.

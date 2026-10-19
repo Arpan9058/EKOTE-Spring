@@ -1,5 +1,14 @@
 # syntax=docker/dockerfile:1
 FROM eclipse-temurin:21-jdk@sha256:3e3c176ffed168beb42c607be9bc1639b466cf00261a0fb04425562c9d0c5c2b AS build
+# The wrapper's checksum pins the ZIP archive. Without unzip it switches to tar.gz,
+# which is a different artifact and must never be accepted against the ZIP checksum.
+RUN --mount=type=secret,id=ca_bundle,target=/etc/ssl/certs/ca-certificates.crt,mode=0444 \
+    set -eu; \
+    export https_proxy="${HTTPS_PROXY:-}" http_proxy="${HTTP_PROXY:-}" no_proxy="${NO_PROXY:-}"; \
+    sed -i 's|http://|https://|g' /etc/apt/sources.list.d/ubuntu.sources; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends unzip; \
+    rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY . .
 # Optional BuildKit secrets support environments using a managed network proxy.
