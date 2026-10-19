@@ -17,7 +17,7 @@ FROM eclipse-temurin:21-jre-alpine@sha256:51ab5e3302e7141ce665ca3ea85e8b5cd648ea
 RUN --mount=type=secret,id=ca_bundle,target=/etc/ssl/certs/ca-certificates.crt \
     set -eu; \
     export https_proxy="${HTTPS_PROXY:-}" http_proxy="${HTTP_PROXY:-}" no_proxy="${NO_PROXY:-}"; \
-    apk add --no-cache --upgrade libpng=1.6.59-r0 zlib=1.3.2-r1
+    apk add --no-cache --upgrade libpng=1.6.59-r0 zlib=1.3.2-r1 libexpat=2.9.0-r0
 WORKDIR /app
 COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
 USER 10001:10001

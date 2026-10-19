@@ -6,6 +6,7 @@
 - Verify production log encoding, request correlation and MDC cleanup in a separate JVM.
 - Record the resolved Maven dependency inventory and reject unreviewed drift in CI;
   keep the full OSV scan and reject missing, malformed or empty inventories.
+- Patch runtime libexpat to 2.9.0-r0 for CVE-2026-77214 and CVE-2026-102633.
 
 ## 2026-10-16 — Runtime and authentication hardening
 

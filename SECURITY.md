@@ -61,6 +61,12 @@ sensitive application vulnerability reports privately with the maintainer.
 
 ## Container OS audit — 2026-10-16
 
+Update — 2026-10-20: a fresh CI scan found CVE-2026-77214 (HIGH) and
+CVE-2026-102633 (MEDIUM) in libexpat 2.8.5-r0. The runtime now installs the signed
+vendor fix, libexpat 2.9.0-r0. The rebuilt image was re-scanned with a refreshed
+Trivy database: 73 OS packages, zero findings across all severities, with unfixed
+advisories included. The existing HIGH/CRITICAL gate remains enabled.
+
 The application runtime now uses digest-pinned Temurin Java 21 on Alpine 3.24.2,
 with signed vendor updates for libpng 1.6.59-r0 and zlib 1.3.2-r1. A fresh Trivy
 scan of the completed image detected **73 OS packages and 0 advisories at all
