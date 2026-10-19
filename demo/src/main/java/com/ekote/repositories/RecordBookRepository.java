@@ -3,10 +3,9 @@ package com.ekote.repositories;
 import com.ekote.dto.RecordBookDTO;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.Repository;
 
-public interface RecordBookRepository
-    extends CrudRepository<com.ekote.entities.GunDetails, Integer> {
+public interface RecordBookRepository extends Repository<com.ekote.entities.GunInfo, String> {
 
   @Query(
       "SELECT new com.ekote.dto.RecordBookDTO("

@@ -13,6 +13,14 @@ variables as described in README, then start the jar or Compose. Flyway applies:
 1. V1: the reviewed inventory schema, including stock audit snapshots.
 2. V2: JDBC session tables plus active-issue, maintenance and audit query indexes.
 3. V3: a unique email constraint preventing concurrent duplicate registrations.
+4. V4: shared authentication-attempt quotas and an expiry index.
+
+History reports read the canonical `guns_info`, `guns`, `issue` and `register`
+tables through typed DTO projections. The obsolete `GunDetails` ORM entity and
+its unused CRUD operations have been removed; the legacy `guns_details` table
+is retained in existing databases and V1 for compatibility and data preservation.
+No automatic table drop or historical data conversion is performed. Report dates
+now serialize consistently as ISO dates/date-times, with newest issues first.
 
 Startup fails on migration/schema validation errors. Do not use `ddl-auto=update`,
 `baseline-on-migrate=true` or an advisory suppression to hide failures. H2 unit/HTTP
@@ -43,7 +51,7 @@ cd demo
 ./mvnw flyway:validate
 ```
 
-The CLI baseline version is explicitly 1; it skips V1 and applies V2/V3. Test the
+The CLI baseline version is explicitly 1; it skips V1 and applies V2–V4. Test the
 new jar with schema validation, exercise registration/inventory workflows, then
 perform the same reviewed procedure in the stopped target database. Secrets belong
 in the environment, never Maven command-line arguments or committed settings.

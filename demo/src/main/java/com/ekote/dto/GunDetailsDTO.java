@@ -1,5 +1,7 @@
 package com.ekote.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,10 +15,10 @@ public class GunDetailsDTO {
   private String model;
   private int quantity;
   private String registeredBy;
-  private String maintenanceDate;
-  private String nextMaintenanceDate;
-  private String issueDate;
-  private String returnDate;
+  private LocalDate maintenanceDate;
+  private LocalDate nextMaintenanceDate;
+  private LocalDateTime issueDate;
+  private LocalDateTime returnDate;
   private String status;
   private String userName;
   private String userEmail;

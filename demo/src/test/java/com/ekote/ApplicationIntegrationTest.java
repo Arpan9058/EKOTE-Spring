@@ -30,6 +30,46 @@ class ApplicationIntegrationTest {
   @Autowired UserRepository users;
   @Autowired GunRepository guns;
   @Autowired GunInfoRepository items;
+  @Autowired com.ekote.repositories.IssueRepository issues;
+
+  @Test
+  void historyUsesTypedIsoDatesAndOrdersNewestIssuesFirst() throws Exception {
+    var member = new User();
+    member.setId(987L);
+    member.setMail("history@example.test");
+    member.setName("History member");
+    member.setRole("USER");
+    users.saveAndFlush(member);
+    var gun = new Gun();
+    gun.setGunName("History rifle");
+    gun.setModel("History model");
+    gun.setQuantity(2);
+    guns.saveAndFlush(gun);
+    var item = new GunInfo();
+    item.setUniqueIdentifier("TYPED-HISTORY");
+    item.setGun(gun);
+    item.setManufacturedDate(LocalDate.of(2024, 2, 29));
+    item.setManufacturedPlace("Factory");
+    item.setMaintenanceDate(LocalDate.of(2025, 1, 2));
+    items.saveAndFlush(item);
+    for (int day : new int[] {1, 2}) {
+      var issue = new com.ekote.entities.Issue();
+      issue.setGunId(gun.getId());
+      issue.setUserId(member.getId());
+      issue.setUniqueIdentifier(item.getUniqueIdentifier());
+      issue.setIssueDate(java.time.LocalDateTime.of(2025, 2, day, 12, 30));
+      issue.setStatus(day == 1 ? "returned" : "issued");
+      if (day == 1) issue.setReturnDate(java.time.LocalDateTime.of(2025, 2, 1, 14, 0));
+      issues.saveAndFlush(issue);
+    }
+    mvc.perform(get("/guns/details/TYPED-HISTORY").with(user("admin").roles("ADMIN")))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2))
+        .andExpect(jsonPath("$[0].maintenanceDate").value("2025-01-02"))
+        .andExpect(jsonPath("$[0].issueDate").value("2025-02-02T12:30:00"))
+        .andExpect(jsonPath("$[0].returnDate").isEmpty())
+        .andExpect(jsonPath("$[1].returnDate").value("2025-02-01T14:00:00"));
+  }
 
   @Test
   void maintainedBrowserBundleIsAvailableWithoutAuthentication() throws Exception {

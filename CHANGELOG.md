@@ -2,6 +2,9 @@
 
 ## 2026-10-20 — Runtime logging and dependency drift checks
 
+- Replace the obsolete duplicate history entity and positional native result mapping
+  with read-only typed queries over canonical tables; retain legacy data and return
+  ISO dates/date-times with deterministic newest-first ordering.
 - Enable built-in structured JSON console logging in the production profile.
 - Verify production log encoding, request correlation and MDC cleanup in a separate JVM.
 - Record the resolved Maven dependency inventory and reject unreviewed drift in CI;

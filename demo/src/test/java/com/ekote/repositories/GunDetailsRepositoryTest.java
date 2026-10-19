@@ -53,7 +53,11 @@ class GunDetailsRepositoryTest {
     var records = service.getGunDetails("ITEM-A");
     assertEquals(1, records.size());
     assertEquals("ITEM-A", records.getFirst().getGunIdentifier());
-    assertEquals("2024-02-01", records.getFirst().getMaintenanceDate());
+    assertEquals(LocalDate.of(2024, 2, 1), records.getFirst().getMaintenanceDate());
+    assertEquals(LocalDateTime.of(2024, 3, 1, 12, 0), records.getFirst().getIssueDate());
+    assertNull(records.getFirst().getReturnDate());
+    assertNull(records.getFirst().getNextMaintenanceDate());
+    assertEquals("member@example.test", records.getFirst().getUserEmail());
     assertTrue(service.getGunDetails("ITEM-B").isEmpty());
     assertEquals(1, items.getPastRecordsByUniqueIdentifier("ITEM-A").size());
     assertTrue(items.getPastRecordsByUniqueIdentifier("ITEM-B").isEmpty());
