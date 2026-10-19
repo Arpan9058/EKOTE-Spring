@@ -2,6 +2,11 @@
 
 ## 2026-10-20 — Runtime logging and dependency drift checks
 
+- Integrate tested Spring Boot 4.1.1, Spotless 3.10.4, Maven 3.10.0 and Wrapper
+  3.3.4 updates; pin the verified Maven archive checksum and refresh the resolved
+  dependency inventory. Keep Java 21 as the supported toolchain/runtime line.
+- Upgrade jQuery to 4.0.0 and synchronize its committed browser assets/checksums;
+  update the pinned OSV reusable workflow.
 - Replace the obsolete duplicate history entity and positional native result mapping
   with read-only typed queries over canonical tables; retain legacy data and return
   ISO dates/date-times with deterministic newest-first ordering.

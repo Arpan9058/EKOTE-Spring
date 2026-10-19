@@ -12,6 +12,9 @@ updates:
     directory: /demo
     schedule:
       interval: weekly
+    ignore:
+      - dependency-name: eclipse-temurin
+        update-types: [version-update:semver-major]
   - package-ecosystem: npm
     directory: /frontend
     schedule:

@@ -2,14 +2,14 @@
   "packages": {
     "@materializecss/materialize": "2.4.0",
     "font-awesome": "4.7.0",
-    "jquery": "3.7.1"
+    "jquery": "4.0.0"
   },
   "sha256": {
     "materialize/materialize.min.js": "94d03d4a5d5392806f2e9b57c0b8441ae616685e31ad084fd2d94327b61372a3",
     "materialize/materialize.min.css": "8cb7d8fc1898c89ee1a08630c4056eacf07d5c905be653e5c42f4f88bc65c961",
     "materialize/materialize.colors.min.css": "b14024dda788bdf6e1089426d6687b5b9f0e8210c72c359c19854a4fce69f4ce",
     "materialize/LICENSE": "e2e758735d1b98a05613200c3e3f80cd31beb4384cd5645d6f774f447bba9c8c",
-    "jquery/jquery.min.js": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a",
+    "jquery/jquery.min.js": "39a546ea9ad97f8bfaf5d3e0e8f8556adb415e470e59007ada9759dce472adaa",
     "jquery/LICENSE.txt": "d4db9ebe6f29f5168eac45ad713f055623ac5d0dcd5ba92da23d650ae012020d",
     "font-awesome/css/font-awesome.min.css": "799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd",
     "font-awesome/LICENSE-README.md": "610427fe917f2b51ef69b5bfa9a7bfe3fcba59b1ccaf86a500a47e5fa1da322b",

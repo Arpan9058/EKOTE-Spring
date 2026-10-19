@@ -1,6 +1,6 @@
 # Dependency resolution and security checks
 
-The Maven manifest is `demo/pom.xml`. It inherits Spring Boot 4.0.8's dependency
+The Maven manifest is `demo/pom.xml`. It inherits Spring Boot 4.1.1's dependency
 management BOM. Dependencies managed by that BOM deliberately omit duplicate
 versions; Lombok and ZXing have explicit versions. The Maven wrapper pins Maven
 and verifies its distribution checksum. Maven has no native lockfile in this
@@ -57,3 +57,8 @@ addition to MVC's Jackson 3, so both BOM lines are patched independently. The ru
 OS scanner runs separately from the Maven SBOM and preserves unfixed advisories.
 The optional Flyway Maven CLI is configured with clean disabled and baseline version
 1; use it only after the reviewed clone/backup/adoption procedure.
+
+The Java toolchain and runtime stay on Java 21. Dependabot major Temurin runtime
+bumps are deferred until a deliberate toolchain/runtime migration; security updates
+within Java 21 remain enabled. The wrapper is 3.3.4 and Maven 3.10.0's archive has
+an explicit SHA-256 pin, verified against the official archive's SHA-512 checksum.
