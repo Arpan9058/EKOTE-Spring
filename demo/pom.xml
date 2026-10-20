@@ -153,7 +153,7 @@
                 </dependencies>
             </plugin>
             <plugin>
-                <groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.13</version>
+                <groupId>org.jacoco</groupId><artifactId>jacoco-maven-plugin</artifactId><version>0.8.15</version>
                 <executions>
                     <execution><goals><goal>prepare-agent</goal></goals></execution>
                     <execution><id>coverage</id><phase>verify</phase><goals><goal>report</goal><goal>check</goal></goals>
